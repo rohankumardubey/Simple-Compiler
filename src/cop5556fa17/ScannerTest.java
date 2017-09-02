@@ -16,13 +16,14 @@ package cop5556fa17;
 
 import static org.junit.Assert.*;
 
+import java.awt.MultipleGradientPaint.ColorSpaceType;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import cop5556fa17.Scanner.LexicalException;
 import cop5556fa17.Scanner.Token;
-
 import static cop5556fa17.Scanner.Kind.*;
 
 public class ScannerTest {
@@ -162,6 +163,27 @@ public class ScannerTest {
 			assertEquals(13,e.getPos());
 			throw e;
 		}
+	}
+	@Test
+	public void operatortest() throws LexicalException {
+	    String input = "-><>,->:\n+***@!=!";
+        Scanner scanner = new Scanner(input).scan();
+        show(input);
+        show(scanner);
+        checkNext(scanner, OP_RARROW, 0, 2, 1, 1);
+        checkNext(scanner, OP_LT,     2, 1, 1, 3);
+        checkNext(scanner, OP_GT,     3, 1, 1, 4);
+        checkNext(scanner, COMMA,     4, 1, 1, 5);
+        checkNext(scanner, OP_RARROW, 5, 2, 1, 6);
+        checkNext(scanner, OP_COLON,  7, 1, 1, 8);
+        checkNext(scanner, OP_PLUS,   9, 1, 2, 1);
+        checkNext(scanner, OP_POWER,  10, 2, 2, 2);
+        checkNext(scanner, OP_TIMES,  12, 1, 2, 4);
+        checkNext(scanner, OP_AT,     13, 1, 2, 5);
+        checkNext(scanner, OP_NEQ,    14, 2, 2, 6);
+        checkNext(scanner, OP_EXCL,   16, 1, 2, 8);
+        checkNextIsEOF(scanner);
+	    
 	}
 
 

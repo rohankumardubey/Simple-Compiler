@@ -238,13 +238,10 @@ public class Scanner {
 		int pos = 0;
 		int line = 1;
 		int posInLine = 1;
-		if(chars.length == pos ) { 
-			tokens.add(new Token(Kind.EOF, pos, 0, line, posInLine));
-			return this;
-		}
 		while(pos<chars.length){
 			char ch = chars[pos];
 			switch(ch){
+			case EOFchar: pos++; tokens.add(new Token(Kind.EOF, pos, 0, line, posInLine));break;
 			case ' '  : pos++; posInLine++; break;
 			case '\n' : pos++; posInLine = 1; line++;  break;
 			case '\t' : pos++ ; posInLine += 6 ; break;
@@ -259,7 +256,7 @@ public class Scanner {
 			case '\"':{
 				int end_ind = pos+1;
 				while(end_ind <chars.length && (chars[end_ind] != '\"' || chars[end_ind] !='\\')) end_ind++;
-				if(end_ind == chars.length  || chars[end_ind] == '\\') throw new LexicalException("unclosed string litteral",end_ind);
+				if(end_ind == chars.length  || chars[end_ind] == '\\') throw new LexicalException("unclosed string litteral",end_ind-1);
 				else {
 					tokens.add(new Token(Kind.STRING_LITERAL, pos, end_ind - pos, line, posInLine));
 					pos += end_ind;
