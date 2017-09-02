@@ -16,8 +16,19 @@ package cop5556fa17;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Stack;
+
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter.DEFAULT;
 
 public class Scanner {
+	
+	static final char EOFchar = 0;	
+	final ArrayList<Token> tokens;	
+	final char[] chars;  	
+	/**
+	 * position of the next token to be returned by a call to nextToken
+	 */
+	private int nextTokenPos = 0; 
 	
 	@SuppressWarnings("serial")
 	public static class LexicalException extends Exception {
@@ -47,17 +58,6 @@ public class Scanner {
 		LSQUARE/* [ */, RSQUARE/* ] */, SEMI/* ; */, COMMA/* , */, EOF;
 	}
 
-	/** Class to represent Tokens. 
-	 * 
-	 * This is defined as a (non-static) inner class
-	 * which means that each Token instance is associated with a specific 
-	 * Scanner instance.  We use this when some token methods access the
-	 * chars array in the associated Scanner.
-	 * 
-	 * 
-	 * @author Beverly Sanders
-	 *
-	 */
 	public class Token {
 		public final Kind kind;
 		public final int pos;
@@ -215,30 +215,7 @@ public class Scanner {
 
 	}
 
-	/** 
-	 * Extra character added to the end of the input characters to simplify the
-	 * Scanner.  
-	 */
-	static final char EOFchar = 0;
 	
-	/**
-	 * The list of tokens created by the scan method.
-	 */
-	final ArrayList<Token> tokens;
-	
-	/**
-	 * An array of characters representing the input.  These are the characters
-	 * from the input string plus and additional EOFchar at the end.
-	 */
-	final char[] chars;  
-
-
-
-	
-	/**
-	 * position of the next token to be returned by a call to nextToken
-	 */
-	private int nextTokenPos = 0;
 
 	Scanner(String inputString) {
 		int numChars = inputString.length();
@@ -261,8 +238,176 @@ public class Scanner {
 		int pos = 0;
 		int line = 1;
 		int posInLine = 1;
-		tokens.add(new Token(Kind.EOF, pos, 0, line, posInLine));
+		if(chars.length == pos ) { 
+			tokens.add(new Token(Kind.EOF, pos, 0, line, posInLine));
+			return this;
+		}
+		while(pos<chars.length){
+			char ch = chars[pos];
+			switch(ch){
+			case ' ' : pos++; posInLine++; break;
+			case '?': {
+				tokens.add(new Token(Kind.OP_Q, pos, 1, line, posInLine));
+				pos++;
+				posInLine++;
+				break;
+			}
+			case ':':{
+				tokens.add(new Token(Kind.OP_COLON, pos, 1, line, posInLine));
+				pos++;
+				posInLine++;
+				break;
+			}
+			case '&' :{
+				tokens.add(new Token(Kind.OP_Q, pos, 1, line, posInLine));
+				pos++;
+				posInLine++;
+				break;
+			}
+			case '|' : {
+				tokens.add(new Token(Kind.OP_OR, pos, 1, line, posInLine));
+				pos++;
+				posInLine++;
+				break;
+			}
+			
+			case '+' : {
+				tokens.add(new Token(Kind.OP_PLUS, pos, 1, line, posInLine));
+				pos++;
+				posInLine++;
+				break;
+			}
+			case '/': {
+				tokens.add(new Token(Kind.OP_DIV, pos, 1, line, posInLine));
+				pos++;
+				posInLine++;
+				break;
+			}
+			case '%' : {
+				tokens.add(new Token(Kind.OP_MOD, pos, 1, line, posInLine));
+				pos++;
+				posInLine++;
+				break;
+				
+			}
+			case '@': {
+				tokens.add(new Token(Kind.OP_AT, pos, 1, line, posInLine));
+				pos++;
+				posInLine++;
+				break;
+			} 
+			case '(':{
+			
+				tokens.add(new Token(Kind.LPAREN, pos, 1, line, posInLine));
+				pos++;
+				posInLine++;
+				break;
+			}
+			case ')' :{
+			
+				tokens.add(new Token(Kind.RPAREN, pos, 1, line, posInLine));
+				pos++;
+				posInLine++;
+				break;
+			}
+			case '[' :{
+				tokens.add(new Token(Kind.LSQUARE, pos, 1, line, posInLine));
+				pos++;
+				posInLine++;
+				break;
+			}
+			case ']' :{
+				tokens.add(new Token(Kind.RSQUARE, pos, 1, line, posInLine));
+				pos++;
+				posInLine++;
+				break;
+			}
+			case ';' :{
+				tokens.add(new Token(Kind.SEMI, pos, 1, line, posInLine));
+				pos++;
+				posInLine++;
+				break;
+			}
+			case ',':{
+				
+				tokens.add(new Token(Kind.COMMA, pos, 1, line, posInLine));
+				pos++;
+				posInLine++;
+				break;
+			}
+			default:{
+				if(Character.isDigit(ch)){
+					if (ch == '0' || (pos<chars.length && !Character.isDigit(chars[pos+1]) )){
+						tokens.add(new Token(Kind.INTEGER_LITERAL, pos, 1, line, posInLine));
+						pos++;
+						posInLine++;
+						
+					}
+					else {
+						int end_ind = pos+1;
+						while(pos<chars.length && Character.isDigit(chars[end_ind+1])) end_ind++;
+						try {
+							Integer.parseInt(new String(chars,pos,end_ind));
+						}
+						catch(Exception e) {
+							throw new LexicalException("Number exceeds 32 bits", pos);
+						}
+						tokens.add(new Token(Kind.INTEGER_LITERAL,pos,end_ind - pos ,line,posInLine));
+						pos = end_ind;
+						posInLine += end_ind - pos;
+					}
+				}
+				else if(Character.isLetter(ch) || ch == '_' || ch == '$'){
+					int end_ind = pos+1;
+					while(pos<chars.length && Character.isLetter(chars[end_ind]) || ch == '_' || ch == '$' ) end_ind++;
+					String S = new String(chars,pos,end_ind);
+					switch(S){
+					case "true": tokens.add(new Token(Kind.BOOLEAN_LITERAL,pos,end_ind - pos ,line,posInLine)); break;
+					case  "false" : tokens.add(new Token(Kind.BOOLEAN_LITERAL,pos,end_ind - pos ,line,posInLine)); break;
+					case "X" : tokens.add(new Token(Kind.KW_X,pos,end_ind - pos ,line,posInLine));
+					case "x" : tokens.add(new Token(Kind.KW_x,pos,end_ind - pos ,line,posInLine));
+					case "Y": tokens.add(new Token(Kind.KW_Y,pos,end_ind - pos ,line,posInLine));
+					case "y": tokens.add(new Token(Kind.KW_y,pos,end_ind - pos ,line,posInLine));
+					case "r": tokens.add(new Token(Kind.KW_r,pos,end_ind - pos ,line,posInLine));
+					case "R": tokens.add(new Token(Kind.KW_R,pos,end_ind - pos ,line,posInLine));
+					case "A": tokens.add(new Token(Kind.KW_A,pos,end_ind - pos ,line,posInLine));
+					case "a": tokens.add(new Token(Kind.KW_a,pos,end_ind - pos ,line,posInLine));
+					case "Z": tokens.add(new Token(Kind.KW_Z,pos,end_ind - pos ,line,posInLine));
+					case "DEF_X": tokens.add(new Token(Kind.KW_DEF_X,pos,end_ind - pos ,line,posInLine));
+					case "DEF_Y": tokens.add(new Token(Kind.KW_DEF_Y,pos,end_ind - pos ,line,posInLine));
+					case "SCREEN": tokens.add(new Token(Kind.KW_SCREEN,pos,end_ind - pos ,line,posInLine));
+					case "cart_x": tokens.add(new Token(Kind.KW_cart_x,pos,end_ind - pos ,line,posInLine));
+					case "cart_y": tokens.add(new Token(Kind.KW_cart_y,pos,end_ind - pos ,line,posInLine));
+					case "polar_a": tokens.add(new Token(Kind.KW_polar_a,pos,end_ind - pos ,line,posInLine));
+					case "polar_r": tokens.add(new Token(Kind.KW_polar_r,pos,end_ind - pos ,line,posInLine));
+					case "abs": tokens.add(new Token(Kind.KW_abs,pos,end_ind - pos ,line,posInLine));
+					case "sin": tokens.add(new Token(Kind.KW_sin,pos,end_ind - pos ,line,posInLine));
+					case "cos": tokens.add(new Token(Kind.KW_cos,pos,end_ind - pos ,line,posInLine));
+					case "atan": tokens.add(new Token(Kind.KW_atan,pos,end_ind - pos ,line,posInLine));
+					case "log": tokens.add(new Token(Kind.KW_log,pos,end_ind - pos ,line,posInLine));
+					case "image": tokens.add(new Token(Kind.KW_image,pos,end_ind - pos ,line,posInLine));
+					case "int": tokens.add(new Token(Kind.KW_int,pos,end_ind - pos ,line,posInLine));
+					case "boolen": tokens.add(new Token(Kind.KW_boolean,pos,end_ind - pos ,line,posInLine));
+					case "url": tokens.add(new Token(Kind.KW_url,pos,end_ind - pos ,line,posInLine));
+					case "file": tokens.add(new Token(Kind.KW_file,pos,end_ind - pos ,line,posInLine));
+					default : tokens.add(new Token(Kind.IDENTIFIER,pos,end_ind - pos ,line,posInLine));
+					} 	
+					pos = end_ind;
+					posInLine += end_ind - pos;
+					
+				}
+				
+				
+				
+			}
+			
+			
+			
+			}
+		}
+		
 		return this;
+		
 
 	}
 
