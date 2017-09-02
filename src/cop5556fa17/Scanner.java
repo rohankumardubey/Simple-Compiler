@@ -245,7 +245,33 @@ public class Scanner {
 		while(pos<chars.length){
 			char ch = chars[pos];
 			switch(ch){
-			case ' ' : pos++; posInLine++; break;
+			case ' '  : pos++; posInLine++; break;
+			case '\n' : pos++; posInLine = 1; line++;  break;
+			case '\t' : pos++ ; posInLine += 6 ; break;
+			case '\r' : {
+				//tokens.add(new Token(Kind.OP_Q, pos, 1, line, posInLine));
+				pos++;
+				posInLine++;
+				break;
+			}
+			case '\f':
+			case '\b':
+			case '\"':{
+				int end_ind = pos+1;
+				while(end_ind <chars.length && (chars[end_ind] != '\"' || chars[end_ind] !='\\')) end_ind++;
+				if(end_ind == chars.length  || chars[end_ind] == '\\') throw new LexicalException("unclosed string litteral",end_ind);
+				else {
+					tokens.add(new Token(Kind.STRING_LITERAL, pos, end_ind - pos, line, posInLine));
+					pos += end_ind;
+					posInLine += end_ind;
+					break;
+					
+				}
+			}
+			case '\'':
+			case '\\':
+			
+			
 			case '?': {
 				tokens.add(new Token(Kind.OP_Q, pos, 1, line, posInLine));
 				pos++;
@@ -335,6 +361,102 @@ public class Scanner {
 				posInLine++;
 				break;
 			}
+			case '=' : {
+				if(chars[pos+1] == '=') {
+					tokens.add(new Token(Kind.OP_EQ, pos, 2, line, posInLine));
+					pos += 2;
+					posInLine += 2;
+					
+				}
+				else {
+					tokens.add(new Token(Kind.OP_ASSIGN, pos, 1, line, posInLine));
+					pos++;
+					posInLine++;
+					
+				}
+				break;
+			}
+			
+			case '!' :{
+				if(chars[pos+1] == '=') {
+					tokens.add(new Token(Kind.OP_NEQ, pos, 2, line, posInLine));
+					pos += 2;
+					posInLine += 2;
+					
+				}
+				else {
+					tokens.add(new Token(Kind.OP_EXCL, pos, 1, line, posInLine));
+					pos++;
+					posInLine++;
+					
+				}
+				break;
+			}
+			case '<' : {
+				if(chars[pos+1] == '=') {
+					tokens.add(new Token(Kind.OP_LE, pos, 2, line, posInLine));
+					pos += 2;
+					posInLine += 2;
+					
+				}
+				else if(chars[pos+1] == '-'){
+					tokens.add(new Token(Kind.OP_LARROW, pos, 2, line, posInLine));
+					pos += 2;
+					posInLine += 2;
+					
+				}
+				else {
+					tokens.add(new Token(Kind.OP_LT, pos, 1, line, posInLine));
+					pos++;
+					posInLine++;
+					
+				}
+				break;
+			}
+			case '>' :{
+				if(chars[pos+1] == '=') {
+					tokens.add(new Token(Kind.OP_GE, pos, 2, line, posInLine));
+					pos += 2;
+					posInLine += 2;
+					
+				}
+				else {
+					tokens.add(new Token(Kind.OP_GT, pos, 1, line, posInLine));
+					pos++;
+					posInLine++;
+					
+				}
+				break;
+			}
+			case '-' : {
+				if(chars[pos+1] == '>') {
+					tokens.add(new Token(Kind.OP_RARROW, pos, 2, line, posInLine));
+					pos += 2;
+					posInLine += 2;
+					
+				}
+				else {
+					tokens.add(new Token(Kind.OP_MINUS, pos, 1, line, posInLine));
+					pos++;
+					posInLine++;
+				
+				}
+				break;
+			}
+			case '*' : {
+				if(chars[pos+1] == '*') {
+					tokens.add(new Token(Kind.OP_POWER, pos, 2, line, posInLine));
+					pos += 2;
+					posInLine += 2;
+				}
+				else {
+					tokens.add(new Token(Kind.OP_TIMES, pos, 1, line, posInLine));
+					pos++;
+					posInLine++;
+					
+				}
+				break;
+			}
 			default:{
 				if(Character.isDigit(ch)){
 					if (ch == '0' || (pos<chars.length && !Character.isDigit(chars[pos+1]) )){
@@ -345,7 +467,7 @@ public class Scanner {
 					}
 					else {
 						int end_ind = pos+1;
-						while(pos<chars.length && Character.isDigit(chars[end_ind+1])) end_ind++;
+						while(end_ind<chars.length && Character.isDigit(chars[end_ind+1])) end_ind++;
 						try {
 							Integer.parseInt(new String(chars,pos,end_ind));
 						}
@@ -359,7 +481,7 @@ public class Scanner {
 				}
 				else if(Character.isLetter(ch) || ch == '_' || ch == '$'){
 					int end_ind = pos+1;
-					while(pos<chars.length && Character.isLetter(chars[end_ind]) || ch == '_' || ch == '$' ) end_ind++;
+					while(end_ind<chars.length && Character.isLetter(chars[end_ind]) || ch == '_' || ch == '$' ) end_ind++;
 					String S = new String(chars,pos,end_ind);
 					switch(S){
 					case "true": tokens.add(new Token(Kind.BOOLEAN_LITERAL,pos,end_ind - pos ,line,posInLine)); break;
