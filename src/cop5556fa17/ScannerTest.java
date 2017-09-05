@@ -166,12 +166,11 @@ public class ScannerTest {
 	}
 	@Test
 	public void operatortest() throws LexicalException {
-	    String input = "-><>,->:\n+***@!=! X x 078868 789 1 2 3 4 78318 138472        46t //dxjvbdjbvcodj\n daxcdx 5875 \"vscdvsc\" dsd$hdg_ atan \n ";
+	    String input = "-><>,->:\n+***@!=! X x 078868 789 1 2 3 4 78318 138472        46 //dxjvbdjbvcodj\n daxcdx 5875 \"vscdvsc\" dsd$hdg_ atan \n ";
         //String input = "atan";
 	    Scanner scanner = new Scanner(input).scan();
         show(input);
         show(scanner);
-        //checkNext(scanner, KW_atan,     0, 4, 1, 1);
         checkNext(scanner, OP_RARROW, 0, 2, 1, 1);
         checkNext(scanner, OP_LT,     2, 1, 1, 3);
         checkNext(scanner, OP_GT,     3, 1, 1, 4);
@@ -183,10 +182,61 @@ public class ScannerTest {
         checkNext(scanner, OP_TIMES,  12, 1, 2, 4);
         checkNext(scanner, OP_AT,     13, 1, 2, 5);
         checkNext(scanner, OP_NEQ,    14, 2, 2, 6);
-        checkNext(scanner, OP_EXCL,   16, 1, 2, 8); 
+        checkNext(scanner, OP_EXCL,   16, 1, 2, 8);
+        checkNext(scanner, KW_X,      18, 1, 2, 10);
+        checkNext(scanner, KW_x,      20, 1, 2, 12);
+        checkNext(scanner, INTEGER_LITERAL,   22, 1, 2, 14);
+        checkNext(scanner, INTEGER_LITERAL,   23, 5, 2, 15);
+        checkNext(scanner, INTEGER_LITERAL,   29, 3, 2, 21);
+        checkNext(scanner, INTEGER_LITERAL,   33, 1, 2, 25);
+        checkNext(scanner, INTEGER_LITERAL,   35, 1, 2, 27);
+        checkNext(scanner, INTEGER_LITERAL,   37, 1, 2, 29);
+        checkNext(scanner, INTEGER_LITERAL,   39, 1, 2, 31);
+        checkNext(scanner, INTEGER_LITERAL,   41, 5, 2, 33);
+        checkNext(scanner, INTEGER_LITERAL,   47, 6, 2, 39);
+        checkNext(scanner, INTEGER_LITERAL,   61, 2, 2, 53);
+        checkNext(scanner, IDENTIFIER,        81, 6, 3, 2);
+        checkNext(scanner, INTEGER_LITERAL,   88, 4, 3, 9);
+        checkNext(scanner, STRING_LITERAL,    93,9,3,14);
+        checkNext(scanner, IDENTIFIER,        103,8,3,117);
+        checkNext(scanner, KW_atan,           112,4,3,126);
+        
+        
         checkNextIsEOF(scanner);
 	    
 	}
+	
+	@Test
+    public void extraCharTest() throws LexicalException {
+        String input = "abc def/n345 #abc";
+        //String input = "atan";
+        show(input);
+        thrown.expect(LexicalException.class);  //Tell JUnit to expect a LexicalException
+        try {
+            new Scanner(input).scan();
+        } catch (LexicalException e) {  //
+            show(e);
+            assertEquals(13,e.getPos());
+            throw e;
+        }
+        
+    }
+	
+	@Test
+    public void testing() throws LexicalException {
+        String input = "99999999999999999";
+        //String input = "atan";
+        show(input);
+        thrown.expect(LexicalException.class);  //Tell JUnit to expect a LexicalException
+        try {
+            new Scanner(input).scan();
+        } catch (LexicalException e) {  //
+            show(e);
+            assertEquals(17,e.getPos());
+            throw e;
+        }
+        
+    }
 
 
 }

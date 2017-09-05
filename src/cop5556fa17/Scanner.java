@@ -254,16 +254,17 @@ public class Scanner {
 			case '\f':
 			case '\b':
 			case '\"':{
+			    
 				int end_ind = pos+1;
 				while(end_ind <chars.length && (chars[end_ind] != '\"')) end_ind++;
 				if(end_ind == chars.length  || chars[end_ind] == '\\') throw new LexicalException("unclosed string litteral",end_ind-1);
 				else {
+				    end_ind++;
 					tokens.add(new Token(Kind.STRING_LITERAL, pos, end_ind - pos, line, posInLine));
-					pos += end_ind;
-					posInLine += end_ind;
-					break;
-					
+					pos = end_ind +1 ;
+					posInLine += end_ind + 1;					
 				}
+				break;
 			}
 			case '\'':
 			case '\\':
@@ -305,6 +306,7 @@ public class Scanner {
 			        int end_ind = pos+2;
 			        while(chars[end_ind] != '\n') end_ind++;
 			        pos = end_ind;
+			        
 			        break;
 			    }
 			    else{ 
@@ -478,16 +480,17 @@ public class Scanner {
 							Integer.parseInt(new String(chars,pos,end_ind - pos));
 						}
 						catch(Exception e) {
-							throw new LexicalException("Number exceeds 32 bits", pos);
+							throw new LexicalException("Number exceeds 32 bits", end_ind);
 						}
 						tokens.add(new Token(Kind.INTEGER_LITERAL,pos,end_ind - pos ,line,posInLine));
-						pos = end_ind;
 						posInLine += end_ind - pos;
+						pos = end_ind;
+						
 					}
 				}
 				else if(Character.isLetter(ch) || ch == '_' || ch == '$'){
 					int end_ind = pos+1;
-					while(end_ind<chars.length && Character.isLetter(chars[end_ind]) || chars[end_ind] == '_' || chars[end_ind] == '$' ) end_ind++;
+					while(end_ind<chars.length && Character.isLetterOrDigit(chars[end_ind]) || chars[end_ind] == '_' || chars[end_ind] == '$' ) end_ind++;
 					String S = new String(chars,pos,end_ind - pos);
 					System.out.println(S);
 					switch(S){
@@ -521,8 +524,9 @@ public class Scanner {
 					case "file": tokens.add(new Token(Kind.KW_file,pos,end_ind - pos ,line,posInLine)); break;
 					default : tokens.add(new Token(Kind.IDENTIFIER,pos,end_ind - pos ,line,posInLine)); break;
 					} 	
-					pos = end_ind;
 					posInLine += end_ind - pos;
+					pos = end_ind;
+					
 					
 				}
 				else throw new LexicalException("No suitable Token detected" , pos);
