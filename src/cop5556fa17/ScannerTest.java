@@ -166,10 +166,12 @@ public class ScannerTest {
 	}
 	@Test
 	public void operatortest() throws LexicalException {
-	    String input = "-><>,->:\n+***@!=!";
-        Scanner scanner = new Scanner(input).scan();
+	    String input = "-><>,->:\n+***@!=! X x 078868 789 1 2 3 4 78318 138472        46t //dxjvbdjbvcodj\n daxcdx 5875 \"vscdvsc\" dsd$hdg_ atan \n ";
+        //String input = "atan";
+	    Scanner scanner = new Scanner(input).scan();
         show(input);
         show(scanner);
+        //checkNext(scanner, KW_atan,     0, 4, 1, 1);
         checkNext(scanner, OP_RARROW, 0, 2, 1, 1);
         checkNext(scanner, OP_LT,     2, 1, 1, 3);
         checkNext(scanner, OP_GT,     3, 1, 1, 4);
@@ -181,7 +183,7 @@ public class ScannerTest {
         checkNext(scanner, OP_TIMES,  12, 1, 2, 4);
         checkNext(scanner, OP_AT,     13, 1, 2, 5);
         checkNext(scanner, OP_NEQ,    14, 2, 2, 6);
-        checkNext(scanner, OP_EXCL,   16, 1, 2, 8);
+        checkNext(scanner, OP_EXCL,   16, 1, 2, 8); 
         checkNextIsEOF(scanner);
 	    
 	}

@@ -241,7 +241,7 @@ public class Scanner {
 		while(pos<chars.length){
 			char ch = chars[pos];
 			switch(ch){
-			case EOFchar: pos++; tokens.add(new Token(Kind.EOF, pos, 0, line, posInLine));break;
+			case EOFchar:  tokens.add(new Token(Kind.EOF, pos, 0, line, posInLine)); pos++; break;
 			case ' '  : pos++; posInLine++; break;
 			case '\n' : pos++; posInLine = 1; line++;  break;
 			case '\t' : pos++ ; posInLine += 6 ; break;
@@ -255,7 +255,7 @@ public class Scanner {
 			case '\b':
 			case '\"':{
 				int end_ind = pos+1;
-				while(end_ind <chars.length && (chars[end_ind] != '\"' || chars[end_ind] !='\\')) end_ind++;
+				while(end_ind <chars.length && (chars[end_ind] != '\"')) end_ind++;
 				if(end_ind == chars.length  || chars[end_ind] == '\\') throw new LexicalException("unclosed string litteral",end_ind-1);
 				else {
 					tokens.add(new Token(Kind.STRING_LITERAL, pos, end_ind - pos, line, posInLine));
@@ -301,10 +301,19 @@ public class Scanner {
 				break;
 			}
 			case '/': {
-				tokens.add(new Token(Kind.OP_DIV, pos, 1, line, posInLine));
-				pos++;
-				posInLine++;
-				break;
+			    if(pos+1<chars.length && chars[pos+1] == '/'){
+			        int end_ind = pos+2;
+			        while(chars[end_ind] != '\n') end_ind++;
+			        pos = end_ind;
+			        break;
+			    }
+			    else{ 
+			        tokens.add(new Token(Kind.OP_DIV, pos, 1, line, posInLine));
+	                pos++;
+	                posInLine++;
+	                break;   
+			    }
+				
 			}
 			case '%' : {
 				tokens.add(new Token(Kind.OP_MOD, pos, 1, line, posInLine));
@@ -464,9 +473,9 @@ public class Scanner {
 					}
 					else {
 						int end_ind = pos+1;
-						while(end_ind<chars.length && Character.isDigit(chars[end_ind+1])) end_ind++;
+						while(end_ind<chars.length && Character.isLetterOrDigit(chars[end_ind])) end_ind++;
 						try {
-							Integer.parseInt(new String(chars,pos,end_ind));
+							Integer.parseInt(new String(chars,pos,end_ind - pos));
 						}
 						catch(Exception e) {
 							throw new LexicalException("Number exceeds 32 bits", pos);
@@ -478,43 +487,45 @@ public class Scanner {
 				}
 				else if(Character.isLetter(ch) || ch == '_' || ch == '$'){
 					int end_ind = pos+1;
-					while(end_ind<chars.length && Character.isLetter(chars[end_ind]) || ch == '_' || ch == '$' ) end_ind++;
-					String S = new String(chars,pos,end_ind);
+					while(end_ind<chars.length && Character.isLetter(chars[end_ind]) || chars[end_ind] == '_' || chars[end_ind] == '$' ) end_ind++;
+					String S = new String(chars,pos,end_ind - pos);
+					System.out.println(S);
 					switch(S){
 					case "true": tokens.add(new Token(Kind.BOOLEAN_LITERAL,pos,end_ind - pos ,line,posInLine)); break;
-					case  "false" : tokens.add(new Token(Kind.BOOLEAN_LITERAL,pos,end_ind - pos ,line,posInLine)); break;
-					case "X" : tokens.add(new Token(Kind.KW_X,pos,end_ind - pos ,line,posInLine));
-					case "x" : tokens.add(new Token(Kind.KW_x,pos,end_ind - pos ,line,posInLine));
-					case "Y": tokens.add(new Token(Kind.KW_Y,pos,end_ind - pos ,line,posInLine));
-					case "y": tokens.add(new Token(Kind.KW_y,pos,end_ind - pos ,line,posInLine));
-					case "r": tokens.add(new Token(Kind.KW_r,pos,end_ind - pos ,line,posInLine));
-					case "R": tokens.add(new Token(Kind.KW_R,pos,end_ind - pos ,line,posInLine));
-					case "A": tokens.add(new Token(Kind.KW_A,pos,end_ind - pos ,line,posInLine));
-					case "a": tokens.add(new Token(Kind.KW_a,pos,end_ind - pos ,line,posInLine));
-					case "Z": tokens.add(new Token(Kind.KW_Z,pos,end_ind - pos ,line,posInLine));
-					case "DEF_X": tokens.add(new Token(Kind.KW_DEF_X,pos,end_ind - pos ,line,posInLine));
-					case "DEF_Y": tokens.add(new Token(Kind.KW_DEF_Y,pos,end_ind - pos ,line,posInLine));
-					case "SCREEN": tokens.add(new Token(Kind.KW_SCREEN,pos,end_ind - pos ,line,posInLine));
-					case "cart_x": tokens.add(new Token(Kind.KW_cart_x,pos,end_ind - pos ,line,posInLine));
-					case "cart_y": tokens.add(new Token(Kind.KW_cart_y,pos,end_ind - pos ,line,posInLine));
-					case "polar_a": tokens.add(new Token(Kind.KW_polar_a,pos,end_ind - pos ,line,posInLine));
-					case "polar_r": tokens.add(new Token(Kind.KW_polar_r,pos,end_ind - pos ,line,posInLine));
-					case "abs": tokens.add(new Token(Kind.KW_abs,pos,end_ind - pos ,line,posInLine));
-					case "sin": tokens.add(new Token(Kind.KW_sin,pos,end_ind - pos ,line,posInLine));
-					case "cos": tokens.add(new Token(Kind.KW_cos,pos,end_ind - pos ,line,posInLine));
-					case "atan": tokens.add(new Token(Kind.KW_atan,pos,end_ind - pos ,line,posInLine));
-					case "log": tokens.add(new Token(Kind.KW_log,pos,end_ind - pos ,line,posInLine));
-					case "image": tokens.add(new Token(Kind.KW_image,pos,end_ind - pos ,line,posInLine));
-					case "int": tokens.add(new Token(Kind.KW_int,pos,end_ind - pos ,line,posInLine));
-					case "boolen": tokens.add(new Token(Kind.KW_boolean,pos,end_ind - pos ,line,posInLine));
-					case "url": tokens.add(new Token(Kind.KW_url,pos,end_ind - pos ,line,posInLine));
-					case "file": tokens.add(new Token(Kind.KW_file,pos,end_ind - pos ,line,posInLine));
-					default : tokens.add(new Token(Kind.IDENTIFIER,pos,end_ind - pos ,line,posInLine));
+					case "false": tokens.add(new Token(Kind.BOOLEAN_LITERAL,pos,end_ind - pos ,line,posInLine)); break;
+					case "X": tokens.add(new Token(Kind.KW_X,pos,end_ind - pos ,line,posInLine)); break;
+					case "x": tokens.add(new Token(Kind.KW_x,pos,end_ind - pos ,line,posInLine)); break;
+					case "Y": tokens.add(new Token(Kind.KW_Y,pos,end_ind - pos ,line,posInLine)); break;
+					case "y": tokens.add(new Token(Kind.KW_y,pos,end_ind - pos ,line,posInLine)); break;
+					case "r": tokens.add(new Token(Kind.KW_r,pos,end_ind - pos ,line,posInLine)); break;
+					case "R": tokens.add(new Token(Kind.KW_R,pos,end_ind - pos ,line,posInLine)); break;
+					case "A": tokens.add(new Token(Kind.KW_A,pos,end_ind - pos ,line,posInLine)); break;
+					case "a": tokens.add(new Token(Kind.KW_a,pos,end_ind - pos ,line,posInLine)); break;
+					case "Z": tokens.add(new Token(Kind.KW_Z,pos,end_ind - pos ,line,posInLine)); break;
+					case "DEF_X": tokens.add(new Token(Kind.KW_DEF_X,pos,end_ind - pos ,line,posInLine)); break;
+					case "DEF_Y": tokens.add(new Token(Kind.KW_DEF_Y,pos,end_ind - pos ,line,posInLine)); break;
+					case "SCREEN": tokens.add(new Token(Kind.KW_SCREEN,pos,end_ind - pos ,line,posInLine)); break;
+					case "cart_x": tokens.add(new Token(Kind.KW_cart_x,pos,end_ind - pos ,line,posInLine)); break;
+					case "cart_y": tokens.add(new Token(Kind.KW_cart_y,pos,end_ind - pos ,line,posInLine)); break;
+					case "polar_a": tokens.add(new Token(Kind.KW_polar_a,pos,end_ind - pos ,line,posInLine)); break;
+					case "polar_r": tokens.add(new Token(Kind.KW_polar_r,pos,end_ind - pos ,line,posInLine)); break;
+					case "abs": tokens.add(new Token(Kind.KW_abs,pos,end_ind - pos ,line,posInLine)); break;
+					case "sin": tokens.add(new Token(Kind.KW_sin,pos,end_ind - pos ,line,posInLine)); break;
+					case "cos": tokens.add(new Token(Kind.KW_cos,pos,end_ind - pos ,line,posInLine)); break;
+					case "atan": tokens.add(new Token(Kind.KW_atan,pos,end_ind - pos ,line,posInLine)); break;
+					case "log": tokens.add(new Token(Kind.KW_log,pos,end_ind - pos ,line,posInLine)); break;
+					case "image": tokens.add(new Token(Kind.KW_image,pos,end_ind - pos ,line,posInLine)); break;
+					case "int": tokens.add(new Token(Kind.KW_int,pos,end_ind - pos ,line,posInLine)); break;
+					case "boolen": tokens.add(new Token(Kind.KW_boolean,pos,end_ind - pos ,line,posInLine)); break;
+					case "url": tokens.add(new Token(Kind.KW_url,pos,end_ind - pos ,line,posInLine)); break;
+					case "file": tokens.add(new Token(Kind.KW_file,pos,end_ind - pos ,line,posInLine)); break;
+					default : tokens.add(new Token(Kind.IDENTIFIER,pos,end_ind - pos ,line,posInLine)); break;
 					} 	
 					pos = end_ind;
 					posInLine += end_ind - pos;
 					
 				}
+				else throw new LexicalException("No suitable Token detected" , pos);
 				
 				
 				
