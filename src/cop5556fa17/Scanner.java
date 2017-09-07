@@ -244,12 +244,13 @@ public class Scanner {
 			case EOFchar:  tokens.add(new Token(Kind.EOF, pos, 0, line, posInLine)); pos++; break;
 			case ' '  : pos++; posInLine++; break;
 			case '\n' : pos++; posInLine = 1; line++;  break;
-			case '\t' : pos++ ; posInLine += 6 ; break;
+			case '\t' : pos++ ; posInLine += 1 ; break;
 			case '\r' : {
 				//tokens.add(new Token(Kind.OP_Q, pos, 1, line, posInLine));
-			    if(chars[pos+1] == '\n') break;
+			    if(chars[pos+1] == '\n') { pos++ ;break; }
 				pos++;
-				posInLine++;
+				posInLine = 1;
+				line++;
 				break;
 			}
 			case '\f': {
@@ -264,7 +265,7 @@ public class Scanner {
 				    if(chars[end_ind] == '\n' || chars[end_ind] == '\r') throw new LexicalException("found a line terminator in string literal", pos);
 				    end_ind++;
 				}
-				if(end_ind == chars.length  || chars[end_ind] == '\\') throw new LexicalException("unclosed string literal",end_ind-1);
+				if(end_ind == chars.length) throw new LexicalException("unclosed string literal",end_ind-1);
 				else {
 				    end_ind++;
 					tokens.add(new Token(Kind.STRING_LITERAL, pos, end_ind - pos, line, posInLine));
@@ -525,7 +526,7 @@ public class Scanner {
 					case "log": tokens.add(new Token(Kind.KW_log,pos,end_ind - pos ,line,posInLine)); break;
 					case "image": tokens.add(new Token(Kind.KW_image,pos,end_ind - pos ,line,posInLine)); break;
 					case "int": tokens.add(new Token(Kind.KW_int,pos,end_ind - pos ,line,posInLine)); break;
-					case "boolen": tokens.add(new Token(Kind.KW_boolean,pos,end_ind - pos ,line,posInLine)); break;
+					case "boolean": tokens.add(new Token(Kind.KW_boolean,pos,end_ind - pos ,line,posInLine)); break;
 					case "url": tokens.add(new Token(Kind.KW_url,pos,end_ind - pos ,line,posInLine)); break;
 					case "file": tokens.add(new Token(Kind.KW_file,pos,end_ind - pos ,line,posInLine)); break;
 					default : tokens.add(new Token(Kind.IDENTIFIER,pos,end_ind - pos ,line,posInLine)); break;

@@ -237,6 +237,56 @@ public class ScannerTest {
         }
         
     }
+	@Test
+    public void digittest() throws LexicalException {
+        String input = "123()+4+54321  true file abs polar_a boolean ";
+        Scanner scanner = new Scanner(input).scan();
+        show(input);
+        show(scanner);
+        checkNext(scanner, INTEGER_LITERAL, 0, 3, 1, 1);
+        checkNext(scanner, LPAREN,     3, 1, 1, 4);
+        checkNext(scanner, RPAREN,     4, 1, 1, 5);
+        checkNext(scanner, OP_PLUS,     5, 1, 1, 6);
+        checkNext(scanner, INTEGER_LITERAL, 6, 1, 1, 7);
+        checkNext(scanner, OP_PLUS,  7, 1, 1, 8);
+        checkNext(scanner, INTEGER_LITERAL,   8, 5, 1, 9);
+        checkNext(scanner, BOOLEAN_LITERAL,   15, 4, 1, 16);
+        checkNext(scanner, KW_file,   20, 4, 1, 21);
+        checkNext(scanner, KW_abs,   25, 3, 1, 26);
+        checkNext(scanner, KW_polar_a,   29, 7, 1, 30);
+        checkNext(scanner, KW_boolean,   37, 7, 1, 38);
+        
+        
+    }
+	
+	@Test
+    public void escapesequences() throws LexicalException {
+        String input = "123()+4+54321  true file abs polar_a boolean  image\r\n image \n cart_y \n file \"cdvda\" ";
+        Scanner scanner = new Scanner(input).scan();
+        show(input);
+        show(scanner);
+        checkNext(scanner, INTEGER_LITERAL, 0, 3, 1, 1);
+        checkNext(scanner, LPAREN,          3, 1, 1, 4);
+        checkNext(scanner, RPAREN,          4, 1, 1, 5);
+        checkNext(scanner, OP_PLUS,         5, 1, 1, 6);
+        checkNext(scanner, INTEGER_LITERAL, 6, 1, 1, 7);
+        checkNext(scanner, OP_PLUS,         7, 1, 1, 8);
+        checkNext(scanner, INTEGER_LITERAL, 8, 5, 1, 9);
+        checkNext(scanner, BOOLEAN_LITERAL, 15, 4, 1, 16);
+        checkNext(scanner, KW_file,         20, 4, 1, 21);
+        checkNext(scanner, KW_abs,          25, 3, 1, 26);
+        checkNext(scanner, KW_polar_a,      29, 7, 1, 30);
+        checkNext(scanner, KW_boolean,      37, 7, 1, 38);
+        
+        checkNext(scanner, KW_image,        46, 5, 1, 47);
+        checkNext(scanner, KW_image,        54, 5, 2, 2);
+        checkNext(scanner, KW_cart_y,       62, 6, 3, 2);
+        checkNext(scanner, KW_file,         71, 4, 4, 2);
+        checkNext(scanner, STRING_LITERAL,  76, 7, 4, 7);
+        
+        
+        
+    }
 
 
 }
