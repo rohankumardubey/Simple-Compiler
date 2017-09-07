@@ -208,7 +208,7 @@ public class ScannerTest {
 	
 	@Test
     public void extraCharTest() throws LexicalException {
-        String input = "abc def/n345 #abc";
+        String input = "abc def/n345 #abc ";
         //String input = "atan";
         show(input);
         thrown.expect(LexicalException.class);  //Tell JUnit to expect a LexicalException

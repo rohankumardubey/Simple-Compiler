@@ -247,17 +247,24 @@ public class Scanner {
 			case '\t' : pos++ ; posInLine += 6 ; break;
 			case '\r' : {
 				//tokens.add(new Token(Kind.OP_Q, pos, 1, line, posInLine));
+			    if(chars[pos+1] == '\n') break;
 				pos++;
 				posInLine++;
 				break;
 			}
-			case '\f':
-			case '\b':
+			case '\f': {
+			    pos++;
+			    posInLine++;
+			    break;
+			}
 			case '\"':{
 			    
 				int end_ind = pos+1;
-				while(end_ind <chars.length && (chars[end_ind] != '\"')) end_ind++;
-				if(end_ind == chars.length  || chars[end_ind] == '\\') throw new LexicalException("unclosed string litteral",end_ind-1);
+				while(end_ind <chars.length && (chars[end_ind] != '\"')) {
+				    if(chars[end_ind] == '\n' || chars[end_ind] == '\r') throw new LexicalException("found a line terminator in string literal", pos);
+				    end_ind++;
+				}
+				if(end_ind == chars.length  || chars[end_ind] == '\\') throw new LexicalException("unclosed string literal",end_ind-1);
 				else {
 				    end_ind++;
 					tokens.add(new Token(Kind.STRING_LITERAL, pos, end_ind - pos, line, posInLine));
@@ -266,10 +273,6 @@ public class Scanner {
 				}
 				break;
 			}
-			case '\'':
-			case '\\':
-			
-			
 			case '?': {
 				tokens.add(new Token(Kind.OP_Q, pos, 1, line, posInLine));
 				pos++;
@@ -302,9 +305,13 @@ public class Scanner {
 				break;
 			}
 			case '/': {
-			    if(pos+1<chars.length && chars[pos+1] == '/'){
+			    if(chars[pos+1] == '/'){
 			        int end_ind = pos+2;
-			        while(chars[end_ind] != '\n') end_ind++;
+			        while(end_ind<chars.length && chars[end_ind] != '\n') {
+			            if(chars[end_ind] == '\r' && chars[end_ind+1] == '\n') break;
+			            else if(chars[end_ind] == '\r') break;
+			            end_ind++;
+			        }
 			        pos = end_ind;
 			        
 			        break;
@@ -475,7 +482,7 @@ public class Scanner {
 					}
 					else {
 						int end_ind = pos+1;
-						while(end_ind<chars.length && Character.isLetterOrDigit(chars[end_ind])) end_ind++;
+						while(end_ind<chars.length && Character.isDigit(chars[end_ind])) end_ind++;
 						try {
 							Integer.parseInt(new String(chars,pos,end_ind - pos));
 						}
@@ -492,7 +499,6 @@ public class Scanner {
 					int end_ind = pos+1;
 					while(end_ind<chars.length && Character.isLetterOrDigit(chars[end_ind]) || chars[end_ind] == '_' || chars[end_ind] == '$' ) end_ind++;
 					String S = new String(chars,pos,end_ind - pos);
-					System.out.println(S);
 					switch(S){
 					case "true": tokens.add(new Token(Kind.BOOLEAN_LITERAL,pos,end_ind - pos ,line,posInLine)); break;
 					case "false": tokens.add(new Token(Kind.BOOLEAN_LITERAL,pos,end_ind - pos ,line,posInLine)); break;
