@@ -119,6 +119,10 @@ public class ScannerTest {
 	 * 
 	 * @throws LexicalException
 	 */
+	
+	
+	
+	
 	@Test
 	public void testSemi() throws LexicalException {
 		String input = ";;\n;;";
@@ -275,7 +279,7 @@ public class ScannerTest {
         String input = "123()+4+54321  true file abs polar_a boolean  image\r\n image \n cart_y \n file \"cdvda\" ";
         show(input);
         Scanner scanner = new Scanner(input).scan();
-        show(input);
+        
         show(scanner);
         checkNext(scanner, INTEGER_LITERAL, 0, 3, 1, 1);
         checkNext(scanner, LPAREN,          3, 1, 1, 4);
@@ -299,6 +303,5 @@ public class ScannerTest {
         
         
     }
-
-
+	
 }

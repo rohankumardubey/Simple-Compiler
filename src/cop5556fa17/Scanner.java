@@ -241,7 +241,12 @@ public class Scanner {
 		while(pos<chars.length){
 			char ch = chars[pos];
 			switch(ch){
-			case EOFchar:  tokens.add(new Token(Kind.EOF, pos, 0, line, posInLine)); pos++; break;
+			case EOFchar:  {
+			    if(pos == chars.length-1)
+			        tokens.add(new Token(Kind.EOF, pos, 0, line, posInLine)); 
+			    else new LexicalException("Encountered EOF before end of file ", pos);
+			    pos++; break;
+			}
 			case ' '  : pos++; posInLine++; break;
 			case '\n' : pos++; posInLine = 1; line++;  break;
 			case '\t' : pos++ ; posInLine += 1 ; break;
@@ -275,8 +280,8 @@ public class Scanner {
 				else {
 				    end_ind++;
 					tokens.add(new Token(Kind.STRING_LITERAL, pos, end_ind - pos, line, posInLine));
-					posInLine += end_ind - pos + 1;
-					pos = end_ind +1 ;
+					posInLine += end_ind - pos;
+					pos = end_ind ;
 										
 				}
 				break;
@@ -294,7 +299,7 @@ public class Scanner {
 				break;
 			}
 			case '&' :{
-				tokens.add(new Token(Kind.OP_Q, pos, 1, line, posInLine));
+				tokens.add(new Token(Kind.OP_AND, pos, 1, line, posInLine));
 				pos++;
 				posInLine++;
 				break;
@@ -316,7 +321,7 @@ public class Scanner {
 			    if(chars[pos+1] == '/'){
 			        int end_ind = pos+2;
 			        while(end_ind<chars.length && chars[end_ind] != '\n') {
-			            if(chars[end_ind] == '\r' && chars[end_ind+1] == '\n') break;
+			            if(chars[end_ind] == '\r' && chars[end_ind+1] == '\n'){ end_ind++;  break; }
 			            else if(chars[end_ind] == '\r') break;
 			            end_ind++;
 			        }
