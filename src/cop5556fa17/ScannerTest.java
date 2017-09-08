@@ -164,6 +164,17 @@ public class ScannerTest {
 			throw e;
 		}
 	}
+	
+	@Test
+    public void stringliteraltest() throws LexicalException {
+        String input = "\" greeti\\nngs  \"  ";
+        show(input);
+        Scanner scanner = new Scanner(input).scan();
+        show(scanner);
+        
+        }
+	
+	
 	@Test
 	public void operatortest() throws LexicalException {
 	    String input = "-><>,->:\n+***@!=! X x 078868 789 1 2 3 4 78318 138472        46 //dxjvbdjbvcodj\n daxcdx 5875 \"vscdvsc\" dsd$hdg_ atan \n ";
@@ -198,8 +209,8 @@ public class ScannerTest {
         checkNext(scanner, IDENTIFIER,        81, 6, 3, 2);
         checkNext(scanner, INTEGER_LITERAL,   88, 4, 3, 9);
         checkNext(scanner, STRING_LITERAL,    93,9,3,14);
-        checkNext(scanner, IDENTIFIER,        103,8,3,117);
-        checkNext(scanner, KW_atan,           112,4,3,126);
+        checkNext(scanner, IDENTIFIER,        103,8,3,24);
+        checkNext(scanner, KW_atan,           112,4,3,33);
         
         
         checkNextIsEOF(scanner);
@@ -244,17 +255,17 @@ public class ScannerTest {
         show(input);
         show(scanner);
         checkNext(scanner, INTEGER_LITERAL, 0, 3, 1, 1);
-        checkNext(scanner, LPAREN,     3, 1, 1, 4);
-        checkNext(scanner, RPAREN,     4, 1, 1, 5);
-        checkNext(scanner, OP_PLUS,     5, 1, 1, 6);
+        checkNext(scanner, LPAREN,          3, 1, 1, 4);
+        checkNext(scanner, RPAREN,          4, 1, 1, 5);
+        checkNext(scanner, OP_PLUS,         5, 1, 1, 6);
         checkNext(scanner, INTEGER_LITERAL, 6, 1, 1, 7);
-        checkNext(scanner, OP_PLUS,  7, 1, 1, 8);
-        checkNext(scanner, INTEGER_LITERAL,   8, 5, 1, 9);
-        checkNext(scanner, BOOLEAN_LITERAL,   15, 4, 1, 16);
-        checkNext(scanner, KW_file,   20, 4, 1, 21);
-        checkNext(scanner, KW_abs,   25, 3, 1, 26);
-        checkNext(scanner, KW_polar_a,   29, 7, 1, 30);
-        checkNext(scanner, KW_boolean,   37, 7, 1, 38);
+        checkNext(scanner, OP_PLUS,         7, 1, 1, 8);
+        checkNext(scanner, INTEGER_LITERAL, 8, 5, 1, 9);
+        checkNext(scanner, BOOLEAN_LITERAL, 15, 4, 1, 16);
+        checkNext(scanner, KW_file,         20, 4, 1, 21);
+        checkNext(scanner, KW_abs,          25, 3, 1, 26);
+        checkNext(scanner, KW_polar_a,      29, 7, 1, 30);
+        checkNext(scanner, KW_boolean,      37, 7, 1, 38);
         
         
     }
@@ -262,6 +273,7 @@ public class ScannerTest {
 	@Test
     public void escapesequences() throws LexicalException {
         String input = "123()+4+54321  true file abs polar_a boolean  image\r\n image \n cart_y \n file \"cdvda\" ";
+        show(input);
         Scanner scanner = new Scanner(input).scan();
         show(input);
         show(scanner);

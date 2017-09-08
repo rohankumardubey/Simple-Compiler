@@ -261,16 +261,23 @@ public class Scanner {
 			case '\"':{
 			    
 				int end_ind = pos+1;
-				while(end_ind <chars.length && (chars[end_ind] != '\"')) {
-				    if(chars[end_ind] == '\n' || chars[end_ind] == '\r') throw new LexicalException("found a line terminator in string literal", pos);
+				while(end_ind <chars.length-1 && (chars[end_ind] != '\"')) {
+				    if(chars[end_ind] == '\n' || chars[end_ind] == '\r') throw new LexicalException("found a line terminator in string literal", end_ind);
+				    if(chars[end_ind] == '\\' && (chars[end_ind+1] =='n' || chars[end_ind+1] =='t' ||  chars[end_ind+1] =='f' ||  chars[end_ind+1] =='r' || 
+				            chars[end_ind+1] =='b' || chars[end_ind+1] == '\"' || chars[end_ind+1] =='\'' || chars[end_ind+1] =='\\')){
+				        end_ind++;
+				}
+				    else if(chars[end_ind] == '\\') throw new LexicalException("found an illegal escapse sequence", end_ind);
+				
 				    end_ind++;
 				}
-				if(end_ind == chars.length) throw new LexicalException("unclosed string literal",end_ind-1);
+				if(end_ind == chars.length-1) throw new LexicalException("unclosed string literal",end_ind);
 				else {
 				    end_ind++;
 					tokens.add(new Token(Kind.STRING_LITERAL, pos, end_ind - pos, line, posInLine));
+					posInLine += end_ind - pos + 1;
 					pos = end_ind +1 ;
-					posInLine += end_ind + 1;					
+										
 				}
 				break;
 			}
