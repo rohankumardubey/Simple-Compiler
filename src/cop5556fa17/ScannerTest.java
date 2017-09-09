@@ -247,7 +247,7 @@ public class ScannerTest {
             new Scanner(input).scan();
         } catch (LexicalException e) {  //
             show(e);
-            assertEquals(17,e.getPos());
+            assertEquals(0,e.getPos());
             throw e;
         }
         
@@ -299,9 +299,6 @@ public class ScannerTest {
         checkNext(scanner, KW_cart_y,       62, 6, 3, 2);
         checkNext(scanner, KW_file,         71, 4, 4, 2);
         checkNext(scanner, STRING_LITERAL,  76, 7, 4, 7);
-        
-        
-        
     }
 	
 }
