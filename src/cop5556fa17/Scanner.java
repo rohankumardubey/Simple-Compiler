@@ -239,6 +239,7 @@ public class Scanner {
         int line = 1;
         int posInLine = 1;
         while(pos<chars.length){
+           
             char ch = chars[pos];
             switch(ch){
             case EOFchar:  {
@@ -272,7 +273,7 @@ public class Scanner {
                             chars[end_ind+1] =='b' || chars[end_ind+1] == '\"' || chars[end_ind+1] =='\'' || chars[end_ind+1] =='\\')){
                         end_ind++;
                 }
-                    else if(chars[end_ind] == '\\') throw new LexicalException("found an illegal escapse sequence", end_ind);
+                    else if(chars[end_ind] == '\\') throw new LexicalException("found an illegal escapse sequence", end_ind+1);
                 
                     end_ind++;
                 }
@@ -320,7 +321,7 @@ public class Scanner {
             case '/': {
                 if(chars[pos+1] == '/'){
                     int end_ind = pos+2;
-                    while(end_ind<chars.length && chars[end_ind] != '\n') {
+                    while(end_ind<chars.length-1 && chars[end_ind] != '\n') {
                         if(chars[end_ind] == '\r' && chars[end_ind+1] == '\n'){ end_ind++;  break; }
                         else if(chars[end_ind] == '\r') break;
                         end_ind++;
