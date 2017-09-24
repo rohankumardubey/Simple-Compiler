@@ -4,6 +4,7 @@ package cop5556fa17;
 
 import java.beans.Expression;
 import java.util.Arrays;
+import java.util.function.UnaryOperator;
 
 import cop5556fa17.Scanner.Kind;
 import cop5556fa17.Scanner.Token;
@@ -227,14 +228,194 @@ public class SimpleParser {
 	 */
 	void expression() throws SyntaxException {
 		//TODO implement this.
-	    
-	    
-		throw new UnsupportedOperationException();
+	    OrExpression();
+	    ExtraExpression();
 	}
 
 
 
-	/**
+	private void OrExpression() throws SyntaxException {
+        // TODO Auto-generated method stub
+	    AndExpression();
+	    while(t.kind.equals(OP_OR)){
+	        match(OP_OR);
+	        AndExpression();
+	    }
+        
+    }
+
+    private void AndExpression() throws SyntaxException {
+        // TODO Auto-generated method stub
+        EqExpression();
+        while(t.kind.equals(OP_AND)){
+            match(OP_AND);
+            EqExpression();
+        }
+    }
+
+    private void EqExpression() throws SyntaxException {
+        // TODO Auto-generated method stub
+        RelExpression();
+        while(t.kind.equals(OP_EQ) || t.kind.equals(OP_NEQ)){
+            if(t.kind.equals(OP_EQ)) match(OP_EQ);
+            else if(t.kind.equals(OP_NEQ)) match(OP_NEQ);
+            RelExpression();
+        }
+        
+    }
+
+    private void RelExpression() throws SyntaxException {
+        // TODO Auto-generated method stub
+        AddExpression();
+        while(t.kind.equals(OP_LT) || t.kind.equals(OP_GT) || t.kind.equals(OP_LE) || t.kind.equals(OP_GE) ){
+            if(t.kind.equals(OP_LT)) match(OP_LT);
+            else if(t.kind.equals(OP_GT)) match(OP_GT);
+            else if(t.kind.equals(OP_LE)) match(OP_LE);
+            else if(t.kind.equals(OP_GE)) match(OP_GE);
+            AddExpression();
+        }
+        
+    }
+
+    private void AddExpression() throws SyntaxException {
+        // TODO Auto-generated method stub
+        MultExpression();
+        while(t.kind.equals(OP_PLUS) || t.kind.equals(OP_MINUS)){
+            if(t.kind.equals(OP_PLUS)) match(OP_PLUS);
+            else if(t.kind.equals(OP_MINUS)) match(OP_MINUS);
+            MultExpression();
+            
+        }
+        
+    }
+
+    private void MultExpression() throws SyntaxException {
+        // TODO Auto-generated method stub
+        UnaryExpression();
+        while(t.kind.equals(OP_TIMES) || t.kind.equals(OP_DIV) || t.kind.equals(OP_MOD)){
+            if(t.kind.equals(OP_TIMES)) match(OP_TIMES);
+            else if(t.kind.equals(OP_DIV)) match(OP_DIV);
+            else if(t.kind.equals(OP_MOD))match(OP_MOD);
+            UnaryExpression();
+        }
+        
+    }
+
+    private void UnaryExpression() throws SyntaxException {
+        // TODO Auto-generated method stub
+        if(t.kind.equals(OP_PLUS)){
+            match(OP_PLUS);
+            UnaryExpression();
+        }
+        else if(t.kind.equals(OP_MINUS)){
+            match(OP_MINUS);
+            UnaryExpression();
+        }
+        else UnaryExpressionNotPlusMinus();
+    }
+
+    private void UnaryExpressionNotPlusMinus() throws SyntaxException {
+        // TODO Auto-generated method stub
+        if(t.kind.equals(OP_EXCL)){
+            match(OP_EXCL);
+            UnaryExpression();
+        }
+        else if(t.kind.equals(INTEGER_LITERAL)) Primary();
+        else if(t.kind.equals(IDENTIFIER)) IndentOrPixSelExpr();
+        else if(t.kind.equals(KW_x)) match(KW_x);
+        else if(t.kind.equals(KW_y)) match(KW_y);
+        else if(t.kind.equals(KW_r)) match(KW_r);
+        else if(t.kind.equals(KW_a)) match(KW_a);
+        else if(t.kind.equals(KW_X)) match(KW_X);
+        else if(t.kind.equals(KW_Y)) match(KW_Y);
+        else if(t.kind.equals(KW_Z)) match(KW_Z);
+        else if(t.kind.equals(KW_A)) match(KW_A);
+        else if(t.kind.equals(KW_R)) match(KW_R);
+        else if(t.kind.equals(KW_DEF_X)) match(KW_DEF_X);
+        else if(t.kind.equals(KW_DEF_Y)) match(KW_DEF_Y);
+        else throw new SyntaxException(t, "Syntax error");
+        
+    }
+
+    private void IndentOrPixSelExpr() throws SyntaxException {
+        // TODO Auto-generated method stub
+        match(IDENTIFIER);
+        IndentOrPixNext();
+        
+    }
+    
+
+    private void IndentOrPixNext() throws SyntaxException {
+        // TODO Auto-generated method stub
+        if(t.kind.equals(LSQUARE)){
+            match(LSQUARE);
+            Selector();
+            match(RSQUARE);
+        }
+        
+    }
+
+    private void Selector() throws SyntaxException {
+        // TODO Auto-generated method stub
+        expression();
+        match(COMMA);
+        expression();
+    }
+
+    private void Primary() throws SyntaxException {
+        // TODO Auto-generated method stub
+        if(t.kind.equals(INTEGER_LITERAL)) match(INTEGER_LITERAL);
+        else if(t.kind.equals(LPAREN)){
+            match(LPAREN);
+            expression();
+            match(RPAREN);
+        }
+        else FunctionApplication();
+        
+    }
+
+    private void FunctionApplication()throws SyntaxException {
+        // TODO Auto-generated method stub
+        Functionname();
+        if(t.kind.equals(LPAREN)){
+            match(LPAREN);
+            expression();
+            match(RPAREN);
+        }
+        else if(t.kind.equals(LSQUARE)){
+            match(LSQUARE);
+            Selector();
+            match(RSQUARE);
+        }
+        
+    }
+
+    private void Functionname() throws SyntaxException {
+        // TODO Auto-generated method stub
+        if(t.kind.equals(KW_sin)) match(KW_sin);
+        else if(t.kind.equals(KW_cos)) match(KW_cos);
+        else if(t.kind.equals(KW_atan)) match(KW_atan);
+        else if(t.kind.equals(KW_abs)) match(KW_abs);
+        else if(t.kind.equals(KW_cart_x)) match(KW_cart_x);
+        else if(t.kind.equals(KW_cart_y)) match(KW_cart_y);
+        else if(t.kind.equals(KW_polar_a)) match(KW_polar_a);
+        else if(t.kind.equals(KW_polar_r)) match(KW_polar_r);
+        else throw new SyntaxException(t, "Syntax error");
+        
+    }
+
+    private void ExtraExpression() throws SyntaxException {
+        // TODO Auto-generated method stub
+        if(t.kind.equals(OP_Q)){
+            match(OP_Q);
+            expression();
+            match(OP_COLON);
+            
+        }
+        
+    }
+
+    /**
 	 * Only for check at end of program. Does not "consume" EOF so no attempt to get
 	 * nonexistent next Token.
 	 * 

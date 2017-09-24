@@ -98,7 +98,7 @@ public class SimpleParserTest {
 	 */
 	@Test
 	public void expression1() throws SyntaxException, LexicalException {
-		String input = "2";
+		String input = "2+3 / 4/0";
 		show(input);
 		Scanner scanner = new Scanner(input).scan();  
 		show(scanner);   
