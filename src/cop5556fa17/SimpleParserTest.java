@@ -72,6 +72,16 @@ public class SimpleParserTest {
 		parser.parse();
 	}
 	
+	@Test
+    public void testDec2() throws LexicalException, SyntaxException {
+        String input = "prog int k;";
+        show(input);
+        Scanner scanner = new Scanner(input).scan();  //Create a Scanner and initialize it
+        show(scanner);   //Display the Scanner
+        SimpleParser parser = new SimpleParser(scanner);  //
+        parser.parse();
+    }
+	
 
 	/**
 	 * This example invokes the method for expression directly. 
