@@ -42,7 +42,7 @@ public class SimpleParserTest {
 		String input = "";  //The input is the empty string.  This is not legal
 		show(input);        //Display the input 
 		Scanner scanner = new Scanner(input).scan();  //Create a Scanner and initialize it
-		show(scanner);   //Display the Scanner
+		//show(scanner);   //Display the Scanner
 		SimpleParser parser = new SimpleParser(scanner);  //Create a parser
 		thrown.expect(SyntaxException.class);
 		try {
@@ -64,25 +64,115 @@ public class SimpleParserTest {
 
 	@Test
 	public void testDec1() throws LexicalException, SyntaxException {
-		String input = "prog int k;";
+		String input = "prog int k; image[56/34,67/34] cgh <- \"vhjv\" "
+		        + "; boolean k;  int k = 76/9 * 67;  boolean k = true;"
+		        + "";
 		show(input);
 		Scanner scanner = new Scanner(input).scan();  //Create a Scanner and initialize it
-		show(scanner);   //Display the Scanner
+		//show(scanner);   //Display the Scanner
 		SimpleParser parser = new SimpleParser(scanner);  //
 		parser.parse();
 	}
-	
+	//positive test cases
 	@Test
     public void testDec2() throws LexicalException, SyntaxException {
-        String input = "prog int k;";
+        String input = "prog int k = 65/7;";
         show(input);
         Scanner scanner = new Scanner(input).scan();  //Create a Scanner and initialize it
-        show(scanner);   //Display the Scanner
+        //show(scanner);   //Display the Scanner
         SimpleParser parser = new SimpleParser(scanner);  //
         parser.parse();
     }
-	
-
+	@Test
+    public void testDec3() throws LexicalException, SyntaxException {
+        String input = "prog int k = 65/7;";
+        show(input);
+        Scanner scanner = new Scanner(input).scan();  //Create a Scanner and initialize it
+        //show(scanner);   //Display the Scanner
+        SimpleParser parser = new SimpleParser(scanner);  //
+        parser.parse();
+    }
+	@Test
+    public void testDec4() throws LexicalException, SyntaxException {
+        String input = "prog int k = 65/7;";
+        show(input);
+        Scanner scanner = new Scanner(input).scan();  //Create a Scanner and initialize it
+        //show(scanner);   //Display the Scanner
+        SimpleParser parser = new SimpleParser(scanner);  //
+        parser.parse();
+    }
+	@Test
+    public void testDec5() throws LexicalException, SyntaxException {
+        String input = "prog int k = 65/7;";
+        show(input);
+        Scanner scanner = new Scanner(input).scan();  //Create a Scanner and initialize it
+        //show(scanner);   //Display the Scanner
+        SimpleParser parser = new SimpleParser(scanner);  //
+        parser.parse();
+    }
+	@Test
+    public void testDec6() throws LexicalException, SyntaxException {
+        String input = "prog int k = 65/7;";
+        show(input);
+        Scanner scanner = new Scanner(input).scan();  //Create a Scanner and initialize it
+        //show(scanner);   //Display the Scanner
+        SimpleParser parser = new SimpleParser(scanner);  //
+        parser.parse();
+    }
+	@Test
+    public void testDec7() throws LexicalException, SyntaxException {
+        String input = "prog int k = 65/7;";
+        show(input);
+        Scanner scanner = new Scanner(input).scan();  //Create a Scanner and initialize it
+        //show(scanner);   //Display the Scanner
+        SimpleParser parser = new SimpleParser(scanner);  //
+        parser.parse();
+    }
+	@Test
+    public void testDec8() throws LexicalException, SyntaxException {
+        String input = "prog int k = 65/7;";
+        show(input);
+        Scanner scanner = new Scanner(input).scan();  //Create a Scanner and initialize it
+        //show(scanner);   //Display the Scanner
+        SimpleParser parser = new SimpleParser(scanner);  //
+        parser.parse();
+    }
+	@Test
+    public void testDec9() throws LexicalException, SyntaxException {
+        String input = "prog int k = 65/7;";
+        show(input);
+        Scanner scanner = new Scanner(input).scan();  //Create a Scanner and initialize it
+        //show(scanner);   //Display the Scanner
+        SimpleParser parser = new SimpleParser(scanner);  //
+        parser.parse();
+    }
+	@Test
+    public void testDec10() throws LexicalException, SyntaxException {
+        String input = "prog int k = 65/7;";
+        show(input);
+        Scanner scanner = new Scanner(input).scan();  //Create a Scanner and initialize it
+        //show(scanner);   //Display the Scanner
+        SimpleParser parser = new SimpleParser(scanner);  //
+        parser.parse();
+    }
+	@Test
+    public void testDec11() throws LexicalException, SyntaxException {
+        String input = "prog int k = 65/7;";
+        show(input);
+        Scanner scanner = new Scanner(input).scan();  //Create a Scanner and initialize it
+        //show(scanner);   //Display the Scanner
+        SimpleParser parser = new SimpleParser(scanner);  //
+        parser.parse();
+    }
+	@Test
+    public void testDec12() throws LexicalException, SyntaxException {
+        String input = "prog int k = 65/7;";
+        show(input);
+        Scanner scanner = new Scanner(input).scan();  //Create a Scanner and initialize it
+        //show(scanner);   //Display the Scanner
+        SimpleParser parser = new SimpleParser(scanner);  //
+        parser.parse();
+    }
 	/**
 	 * This example invokes the method for expression directly. 
 	 * Effectively, we are viewing Expression as the start
@@ -101,7 +191,7 @@ public class SimpleParserTest {
 		String input = "2+3 / 4/0";
 		show(input);
 		Scanner scanner = new Scanner(input).scan();  
-		show(scanner);   
+		//show(scanner);   
 		SimpleParser parser = new SimpleParser(scanner);  
 		parser.expression();  //Call expression directly.  
 	}

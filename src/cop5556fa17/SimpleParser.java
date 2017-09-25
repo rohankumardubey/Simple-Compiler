@@ -56,8 +56,8 @@ public class SimpleParser {
 		//TODO  implement this
 	    if(t.kind.equals(IDENTIFIER)){
 	        match(IDENTIFIER);
-	        while(t.kind.equals(KW_int) || t.kind.equals(KW_image)  || t.kind.equals(KW_url) || t.kind.equals(IDENTIFIER)){
-	            if(t.kind.equals(KW_int) || t.kind.equals(KW_image) || t.kind.equals(KW_url)) {
+	        while(t.kind.equals(KW_int) || t.kind.equals(KW_boolean) || t.kind.equals(KW_image)  || t.kind.equals(KW_url) || t.kind.equals(IDENTIFIER)){
+	            if(t.kind.equals(KW_int) || t.kind.equals(KW_boolean) ||  t.kind.equals(KW_image) || t.kind.equals(KW_url)) {
 	                Declaration();
 	                match(SEMI);
 	            }
@@ -147,10 +147,10 @@ public class SimpleParser {
 
     private void Declaration() throws SyntaxException {
         // TODO Auto-generated method stub
-        if(t.kind.equals(KW_int)) VariableDeclaration();
+        if(t.kind.equals(KW_int) || t.kind.equals(KW_boolean)  ) VariableDeclaration();
         else if(t.kind.equals(KW_image))  ImageDeclaration();
         else if(t.kind.equals(KW_url)) SourceSinkDeclaration(); 
-        else throw new SyntaxException(t, "syntax error in token");
+        else throw new SyntaxException(t, "syntax error in token"+ t.kind);
     }
 
     private void VariableDeclaration() throws SyntaxException  {
@@ -387,6 +387,7 @@ public class SimpleParser {
             Selector();
             match(RSQUARE);
         }
+        else throw new SyntaxException(t, "Syntax error"); 
         
     }
 
@@ -424,6 +425,7 @@ public class SimpleParser {
 	 */
 	private Token matchEOF() throws SyntaxException {
 		if (t.kind == EOF) {
+		    System.out.println();
 			return t;
 		}
 		String message =  "Expected EOL at " + t.line + ":" + t.pos_in_line;
@@ -433,6 +435,7 @@ public class SimpleParser {
 	
 	private void match(Kind kind) throws SyntaxException {
         if (t.kind.equals(kind)) {
+            System.out.println(t.kind);
             t = scanner.nextToken();
         }
         else throw new SyntaxException(t,"Syntax error");
