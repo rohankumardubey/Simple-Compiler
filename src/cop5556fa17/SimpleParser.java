@@ -56,8 +56,10 @@ public class SimpleParser {
 		//TODO  implement this
 	    if(t.kind.equals(IDENTIFIER)){
 	        match(IDENTIFIER);
-	        while(t.kind.equals(KW_int) || t.kind.equals(KW_boolean) || t.kind.equals(KW_image)  || t.kind.equals(KW_url) || t.kind.equals(IDENTIFIER)){
-	            if(t.kind.equals(KW_int) || t.kind.equals(KW_boolean) ||  t.kind.equals(KW_image) || t.kind.equals(KW_url)) {
+	        while(t.kind.equals(KW_int) || t.kind.equals(KW_boolean) || t.kind.equals(KW_image)  
+	                || t.kind.equals(KW_url) || t.kind.equals(KW_file)  || t.kind.equals(IDENTIFIER)){
+	            if(t.kind.equals(KW_int) || t.kind.equals(KW_boolean) || 
+	                    t.kind.equals(KW_image) || t.kind.equals(KW_url) || t.kind.equals(KW_file)) {
 	                Declaration();
 	                match(SEMI);
 	            }
@@ -67,7 +69,7 @@ public class SimpleParser {
 	            }
 	        
 	         }
-	        matchEOF();
+	        
 	    }
 	    else throw new SyntaxException(t, "Empty language not supported");
 	    
@@ -82,14 +84,14 @@ public class SimpleParser {
             if(t.kind.equals(OP_ASSIGN)|| t.kind.equals(LSQUARE)) Assignment();
             else if(t.kind.equals(OP_RARROW)) ImageOutStatement();
             else if(t.kind.equals(OP_LARROW)) ImageInStatement();
-            else throw new SyntaxException(t, "Syntax error");
+            else throw new SyntaxException(t, "Syntax error "+t);
         }
     }
 
     private void ImageInStatement() throws SyntaxException {
         // TODO Auto-generated method stub
             match(OP_LARROW);
-            Sink();
+            Source();
         
     }
 
@@ -97,14 +99,14 @@ public class SimpleParser {
         // TODO Auto-generated method stub
         if(t.kind.equals(IDENTIFIER)) match(IDENTIFIER);
         else if(t.kind.equals(KW_SCREEN)) match(KW_SCREEN);
-        else throw new SyntaxException(t, "Syntax error");
+        else throw new SyntaxException(t, "Syntax error "+t.kind);
         
     }
 
     private void ImageOutStatement() throws SyntaxException {
         // TODO Auto-generated method stub
         match(OP_RARROW);
-        Source(); 
+        Sink(); 
     }
 
     private void Assignment() throws SyntaxException {
@@ -116,9 +118,12 @@ public class SimpleParser {
 
     private void lhs() throws SyntaxException {
         // TODO Auto-generated method stub
-        match(LSQUARE);
-        lhsSelector();
-        match(RSQUARE);
+        if(t.kind.equals(LSQUARE)){
+            match(LSQUARE);
+            lhsSelector();
+            match(RSQUARE);
+        }
+        
     }
 
     private void lhsSelector() throws SyntaxException {
@@ -126,7 +131,7 @@ public class SimpleParser {
         match(LSQUARE);
         if(t.kind.equals(KW_x)) XySelector();
         else if(t.kind.equals(KW_r)) RaSelector();
-        else throw new SyntaxException(t, "Syntax error");
+        else throw new SyntaxException(t, "Syntax error "+t.kind);
         match(RSQUARE);
              
     }
@@ -149,8 +154,8 @@ public class SimpleParser {
         // TODO Auto-generated method stub
         if(t.kind.equals(KW_int) || t.kind.equals(KW_boolean)  ) VariableDeclaration();
         else if(t.kind.equals(KW_image))  ImageDeclaration();
-        else if(t.kind.equals(KW_url)) SourceSinkDeclaration(); 
-        else throw new SyntaxException(t, "syntax error in token"+ t.kind);
+        else if(t.kind.equals(KW_url) || t.kind.equals(KW_file)) SourceSinkDeclaration(); 
+        else throw new SyntaxException(t, "syntax error in token:"+ t);
     }
 
     private void VariableDeclaration() throws SyntaxException  {
@@ -168,7 +173,7 @@ public class SimpleParser {
         // TODO Auto-generated method stub
         if(t.kind.equals(KW_int)) match(KW_int);
         else if(t.kind.equals(KW_boolean)) match(KW_boolean);
-        else throw new SyntaxException(t, "syntax error in token");
+        else throw new SyntaxException(t, "syntax error in token:" + t);
         
     }
 
@@ -184,7 +189,7 @@ public class SimpleParser {
         // TODO Auto-generated method stub
         if(t.kind.equals(KW_url)) match(KW_url);
         else if(t.kind.equals(KW_file)) match(KW_file);
-        else throw new SyntaxException(t, "Syntax error");        
+        else throw new SyntaxException(t, "Syntax error:"+t);        
     }
 
     private void ImageDeclaration() throws SyntaxException {
@@ -216,6 +221,7 @@ public class SimpleParser {
             expression();
         }
         else if(t.kind.equals(IDENTIFIER)) match(IDENTIFIER);
+        else throw new SyntaxException(t, "Syntax error:"+t);
         
     }
 
@@ -320,7 +326,7 @@ public class SimpleParser {
             match(OP_EXCL);
             UnaryExpression();
         }
-        else if(t.kind.equals(INTEGER_LITERAL)) Primary();
+        
         else if(t.kind.equals(IDENTIFIER)) IndentOrPixSelExpr();
         else if(t.kind.equals(KW_x)) match(KW_x);
         else if(t.kind.equals(KW_y)) match(KW_y);
@@ -333,7 +339,7 @@ public class SimpleParser {
         else if(t.kind.equals(KW_R)) match(KW_R);
         else if(t.kind.equals(KW_DEF_X)) match(KW_DEF_X);
         else if(t.kind.equals(KW_DEF_Y)) match(KW_DEF_Y);
-        else throw new SyntaxException(t, "Syntax error");
+        else Primary();
         
     }
 
@@ -365,6 +371,7 @@ public class SimpleParser {
     private void Primary() throws SyntaxException {
         // TODO Auto-generated method stub
         if(t.kind.equals(INTEGER_LITERAL)) match(INTEGER_LITERAL);
+        else if(t.kind.equals(BOOLEAN_LITERAL)) match(BOOLEAN_LITERAL);
         else if(t.kind.equals(LPAREN)){
             match(LPAREN);
             expression();
@@ -387,7 +394,7 @@ public class SimpleParser {
             Selector();
             match(RSQUARE);
         }
-        else throw new SyntaxException(t, "Syntax error"); 
+        else throw new SyntaxException(t, "Syntax error "+t.kind); 
         
     }
 
@@ -401,7 +408,7 @@ public class SimpleParser {
         else if(t.kind.equals(KW_cart_y)) match(KW_cart_y);
         else if(t.kind.equals(KW_polar_a)) match(KW_polar_a);
         else if(t.kind.equals(KW_polar_r)) match(KW_polar_r);
-        else throw new SyntaxException(t, "Syntax error");
+        else throw new SyntaxException(t, "Syntax error "+t.kind);
         
     }
 
@@ -411,8 +418,10 @@ public class SimpleParser {
             match(OP_Q);
             expression();
             match(OP_COLON);
+            expression();
             
         }
+        //else throw new SyntaxException(t, "Syntax error "+t.kind);
         
     }
 
@@ -425,10 +434,11 @@ public class SimpleParser {
 	 */
 	private Token matchEOF() throws SyntaxException {
 		if (t.kind == EOF) {
+		    System.out.println(EOF);
 		    System.out.println();
 			return t;
 		}
-		String message =  "Expected EOL at " + t.line + ":" + t.pos_in_line;
+		String message =  "Expected EOL at " + t;
 		throw new SyntaxException(t, message);
 	}
 	
@@ -438,7 +448,7 @@ public class SimpleParser {
             System.out.println(t.kind);
             t = scanner.nextToken();
         }
-        else throw new SyntaxException(t,"Syntax error");
+        else throw new SyntaxException(t, "Syntax error : expected :" + kind + " got :" +t.kind);
 	}
     
 }

@@ -64,9 +64,17 @@ public class SimpleParserTest {
 
 	@Test
 	public void testDec1() throws LexicalException, SyntaxException {
-		String input = "prog int k; image[56/34,67/34] cgh <- \"vhjv\" "
-		        + "; boolean k;  int k = 76/9 * 67;  boolean k = true;"
-		        + "";
+		String input = "prog "
+		        + " int k; "
+		        + " image[56/34,67/34] cgh ; "
+		        + " image svf <- @(x+y+2/4*5*r*Z);"
+		        + " image vkdj ; "
+		        + " boolean k;"
+		        + " int k = a + 76/9 * 67; "
+		        + " url vgjvbhvj = \"vhvjhm\"; "
+		        + " url fbdjob = vjsdlv ;"
+		        + " file file_name = @(x+y+a*X) ; "
+		        + " //this is a commment  ; ";
 		show(input);
 		Scanner scanner = new Scanner(input).scan();  //Create a Scanner and initialize it
 		//show(scanner);   //Display the Scanner
@@ -75,8 +83,13 @@ public class SimpleParserTest {
 	}
 	//positive test cases
 	@Test
-    public void testDec2() throws LexicalException, SyntaxException {
-        String input = "prog int k = 65/7;";
+    public void statement() throws LexicalException, SyntaxException {
+        String input = "prog sai [[x,y]] = (67/x*y);"
+                + "sgf[[r,A]] = 534657+x ;"
+                + "nath -> screen ;"
+                + "gsf ->vfgh ;"
+                + "reddy <- @x+y ;"
+                + "dtgbg = u[534/x,67+y];";
         show(input);
         Scanner scanner = new Scanner(input).scan();  //Create a Scanner and initialize it
         //show(scanner);   //Display the Scanner
@@ -84,13 +97,13 @@ public class SimpleParserTest {
         parser.parse();
     }
 	@Test
-    public void testDec3() throws LexicalException, SyntaxException {
-        String input = "prog int k = 65/7;";
+    public void expressioncheck() throws LexicalException, SyntaxException {
+        String input = "65/7;";
         show(input);
         Scanner scanner = new Scanner(input).scan();  //Create a Scanner and initialize it
         //show(scanner);   //Display the Scanner
         SimpleParser parser = new SimpleParser(scanner);  //
-        parser.parse();
+        parser.expression();
     }
 	@Test
     public void testDec4() throws LexicalException, SyntaxException {
