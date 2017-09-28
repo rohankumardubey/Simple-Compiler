@@ -54,26 +54,21 @@ public class SimpleParser {
 	 */
 	void program() throws SyntaxException {
 		//TODO  implement this
-	    if(t.kind.equals(IDENTIFIER)){
-	        match(IDENTIFIER);
-	        while(t.kind.equals(KW_int) || t.kind.equals(KW_boolean) || t.kind.equals(KW_image)  
-	                || t.kind.equals(KW_url) || t.kind.equals(KW_file)  || t.kind.equals(IDENTIFIER)){
-	            if(t.kind.equals(KW_int) || t.kind.equals(KW_boolean) || 
-	                    t.kind.equals(KW_image) || t.kind.equals(KW_url) || t.kind.equals(KW_file)) {
-	                Declaration();
-	                match(SEMI);
-	            }
-	            else if(t.kind.equals(IDENTIFIER)){
-	                Statement();
-	                match(SEMI);
-	            }
-	        
-	         }
-	        
-	    }
-	    else throw new SyntaxException(t, "Empty language not supported");
-	    
-	}
+        match(IDENTIFIER);
+        while(t.kind.equals(KW_int) || t.kind.equals(KW_boolean) || t.kind.equals(KW_image)  
+                || t.kind.equals(KW_url) || t.kind.equals(KW_file)  || t.kind.equals(IDENTIFIER)){
+            if(t.kind.equals(KW_int) || t.kind.equals(KW_boolean) || 
+                    t.kind.equals(KW_image) || t.kind.equals(KW_url) || t.kind.equals(KW_file)) {
+                Declaration();
+                match(SEMI);
+            }
+            else if(t.kind.equals(IDENTIFIER)){
+                Statement();
+                match(SEMI);
+            }
+        
+         }
+	 }
 
 	
 
