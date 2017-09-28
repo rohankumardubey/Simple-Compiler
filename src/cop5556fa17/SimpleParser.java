@@ -1,14 +1,9 @@
 package cop5556fa17;
 
 
-
-import java.beans.Expression;
-import java.util.Arrays;
-import java.util.function.UnaryOperator;
-
 import cop5556fa17.Scanner.Kind;
 import cop5556fa17.Scanner.Token;
-import cop5556fa17.SimpleParser.SyntaxException;
+
 import static cop5556fa17.Scanner.Kind.*;
 
 public class SimpleParser {
@@ -16,7 +11,6 @@ public class SimpleParser {
 	@SuppressWarnings("serial")
 	public class SyntaxException extends Exception {
 		Token t;
-
 		public SyntaxException(Token t, String message) {
 			super(message);
 			this.t = t;
@@ -72,7 +66,7 @@ public class SimpleParser {
 
 	
 
-	private void Statement()  throws SyntaxException {
+	 void Statement()  throws SyntaxException {
         // TODO Auto-generated method stub
         if(t.kind.equals(IDENTIFIER)){
             match(IDENTIFIER);
@@ -83,14 +77,14 @@ public class SimpleParser {
         }
     }
 
-    private void ImageInStatement() throws SyntaxException {
+     void ImageInStatement() throws SyntaxException {
         // TODO Auto-generated method stub
             match(OP_LARROW);
             Source();
         
     }
 
-    private void Sink() throws SyntaxException  {
+     void Sink() throws SyntaxException  {
         // TODO Auto-generated method stub
         if(t.kind.equals(IDENTIFIER)) match(IDENTIFIER);
         else if(t.kind.equals(KW_SCREEN)) match(KW_SCREEN);
@@ -98,20 +92,20 @@ public class SimpleParser {
         
     }
 
-    private void ImageOutStatement() throws SyntaxException {
+     void ImageOutStatement() throws SyntaxException {
         // TODO Auto-generated method stub
         match(OP_RARROW);
         Sink(); 
     }
 
-    private void Assignment() throws SyntaxException {
+     void Assignment() throws SyntaxException {
         // TODO Auto-generated method stub
         lhs();
         match(OP_ASSIGN);
         expression();
     }
 
-    private void lhs() throws SyntaxException {
+     void lhs() throws SyntaxException {
         // TODO Auto-generated method stub
         if(t.kind.equals(LSQUARE)){
             match(LSQUARE);
@@ -121,7 +115,7 @@ public class SimpleParser {
         
     }
 
-    private void lhsSelector() throws SyntaxException {
+     void lhsSelector() throws SyntaxException {
         // TODO Auto-generated method stub
         match(LSQUARE);
         if(t.kind.equals(KW_x)) XySelector();
@@ -131,21 +125,21 @@ public class SimpleParser {
              
     }
 
-    private void RaSelector() throws SyntaxException  {
+     void RaSelector() throws SyntaxException  {
         // TODO Auto-generated method stub
         match(KW_r);
         match(COMMA);
         match(KW_A);    
     }
 
-    private void XySelector() throws SyntaxException  {
+     void XySelector() throws SyntaxException  {
         // TODO Auto-generated method stub
             match(KW_x);
             match(COMMA);
             match(KW_y);   
     }
 
-    private void Declaration() throws SyntaxException {
+     void Declaration() throws SyntaxException {
         // TODO Auto-generated method stub
         if(t.kind.equals(KW_int) || t.kind.equals(KW_boolean)  ) VariableDeclaration();
         else if(t.kind.equals(KW_image))  ImageDeclaration();
@@ -153,7 +147,7 @@ public class SimpleParser {
         else throw new SyntaxException(t, "syntax error in token:"+ t);
     }
 
-    private void VariableDeclaration() throws SyntaxException  {
+     void VariableDeclaration() throws SyntaxException  {
         // TODO Auto-generated method stub
         varType();
         match(IDENTIFIER);
@@ -164,7 +158,7 @@ public class SimpleParser {
               
     }
 
-    private void varType()  throws SyntaxException {
+     void varType()  throws SyntaxException {
         // TODO Auto-generated method stub
         if(t.kind.equals(KW_int)) match(KW_int);
         else if(t.kind.equals(KW_boolean)) match(KW_boolean);
@@ -172,7 +166,7 @@ public class SimpleParser {
         
     }
 
-    private void SourceSinkDeclaration() throws SyntaxException{
+     void SourceSinkDeclaration() throws SyntaxException{
         // TODO Auto-generated method stub
         SourceSinkType();
         match(IDENTIFIER);
@@ -180,14 +174,14 @@ public class SimpleParser {
         Source();
     }
 
-    private void SourceSinkType() throws SyntaxException {
+     void SourceSinkType() throws SyntaxException {
         // TODO Auto-generated method stub
         if(t.kind.equals(KW_url)) match(KW_url);
         else if(t.kind.equals(KW_file)) match(KW_file);
         else throw new SyntaxException(t, "Syntax error:"+t);        
     }
 
-    private void ImageDeclaration() throws SyntaxException {
+     void ImageDeclaration() throws SyntaxException {
         // TODO Auto-generated method stub
        
         match(KW_image);
@@ -208,7 +202,7 @@ public class SimpleParser {
         
     }
 
-    private void Source() throws SyntaxException  {
+     void Source() throws SyntaxException  {
         // TODO Auto-generated method stub
         if(t.kind.equals(STRING_LITERAL)) match(STRING_LITERAL);
         else if(t.kind.equals(OP_AT)){
@@ -235,7 +229,7 @@ public class SimpleParser {
 
 
 
-	private void OrExpression() throws SyntaxException {
+	 void OrExpression() throws SyntaxException {
         // TODO Auto-generated method stub
 	    AndExpression();
 	    while(t.kind.equals(OP_OR)){
@@ -245,7 +239,7 @@ public class SimpleParser {
         
     }
 
-    private void AndExpression() throws SyntaxException {
+     void AndExpression() throws SyntaxException {
         // TODO Auto-generated method stub
         EqExpression();
         while(t.kind.equals(OP_AND)){
@@ -254,7 +248,7 @@ public class SimpleParser {
         }
     }
 
-    private void EqExpression() throws SyntaxException {
+     void EqExpression() throws SyntaxException {
         // TODO Auto-generated method stub
         RelExpression();
         while(t.kind.equals(OP_EQ) || t.kind.equals(OP_NEQ)){
@@ -265,7 +259,7 @@ public class SimpleParser {
         
     }
 
-    private void RelExpression() throws SyntaxException {
+     void RelExpression() throws SyntaxException {
         // TODO Auto-generated method stub
         AddExpression();
         while(t.kind.equals(OP_LT) || t.kind.equals(OP_GT) || t.kind.equals(OP_LE) || t.kind.equals(OP_GE) ){
@@ -278,7 +272,7 @@ public class SimpleParser {
         
     }
 
-    private void AddExpression() throws SyntaxException {
+     void AddExpression() throws SyntaxException {
         // TODO Auto-generated method stub
         MultExpression();
         while(t.kind.equals(OP_PLUS) || t.kind.equals(OP_MINUS)){
@@ -290,7 +284,7 @@ public class SimpleParser {
         
     }
 
-    private void MultExpression() throws SyntaxException {
+     void MultExpression() throws SyntaxException {
         // TODO Auto-generated method stub
         UnaryExpression();
         while(t.kind.equals(OP_TIMES) || t.kind.equals(OP_DIV) || t.kind.equals(OP_MOD)){
@@ -302,7 +296,7 @@ public class SimpleParser {
         
     }
 
-    private void UnaryExpression() throws SyntaxException {
+     void UnaryExpression() throws SyntaxException {
         // TODO Auto-generated method stub
         if(t.kind.equals(OP_PLUS)){
             match(OP_PLUS);
@@ -315,7 +309,7 @@ public class SimpleParser {
         else UnaryExpressionNotPlusMinus();
     }
 
-    private void UnaryExpressionNotPlusMinus() throws SyntaxException {
+     void UnaryExpressionNotPlusMinus() throws SyntaxException {
         // TODO Auto-generated method stub
         if(t.kind.equals(OP_EXCL)){
             match(OP_EXCL);
@@ -338,7 +332,7 @@ public class SimpleParser {
         
     }
 
-    private void IndentOrPixSelExpr() throws SyntaxException {
+     void IndentOrPixSelExpr() throws SyntaxException {
         // TODO Auto-generated method stub
         match(IDENTIFIER);
         IndentOrPixNext();
@@ -346,7 +340,7 @@ public class SimpleParser {
     }
     
 
-    private void IndentOrPixNext() throws SyntaxException {
+     void IndentOrPixNext() throws SyntaxException {
         // TODO Auto-generated method stub
         if(t.kind.equals(LSQUARE)){
             match(LSQUARE);
@@ -356,18 +350,18 @@ public class SimpleParser {
         
     }
 
-    private void Selector() throws SyntaxException {
+     void Selector() throws SyntaxException {
         // TODO Auto-generated method stub
         expression();
         match(COMMA);
         expression();
     }
 
-    private void Primary() throws SyntaxException {
+     void Primary() throws SyntaxException {
         // TODO Auto-generated method stub
         if(t.kind.equals(INTEGER_LITERAL)) match(INTEGER_LITERAL);
         else if(t.kind.equals(BOOLEAN_LITERAL)) match(BOOLEAN_LITERAL);
-        else if(t.kind.equals(LPAREN)){
+        else if(t.kind.equals(LPAREN)){ 
             match(LPAREN);
             expression();
             match(RPAREN);
@@ -376,7 +370,7 @@ public class SimpleParser {
         
     }
 
-    private void FunctionApplication()throws SyntaxException {
+     void FunctionApplication()throws SyntaxException {
         // TODO Auto-generated method stub
         Functionname();
         if(t.kind.equals(LPAREN)){
@@ -393,7 +387,7 @@ public class SimpleParser {
         
     }
 
-    private void Functionname() throws SyntaxException {
+     void Functionname() throws SyntaxException {
         // TODO Auto-generated method stub
         if(t.kind.equals(KW_sin)) match(KW_sin);
         else if(t.kind.equals(KW_cos)) match(KW_cos);
@@ -407,7 +401,7 @@ public class SimpleParser {
         
     }
 
-    private void ExtraExpression() throws SyntaxException {
+     void ExtraExpression() throws SyntaxException {
         // TODO Auto-generated method stub
         if(t.kind.equals(OP_Q)){
             match(OP_Q);
@@ -427,7 +421,7 @@ public class SimpleParser {
 	 * @return
 	 * @throws SyntaxException
 	 */
-	private Token matchEOF() throws SyntaxException {
+	 Token matchEOF() throws SyntaxException {
 		if (t.kind == EOF) {
 		    System.out.println(EOF);
 		    System.out.println();
@@ -438,7 +432,7 @@ public class SimpleParser {
 	}
 	
 	
-	private void match(Kind kind) throws SyntaxException {
+	 void match(Kind kind) throws SyntaxException {
         if (t.kind.equals(kind)) {
             System.out.println(t.kind);
             t = scanner.nextToken();

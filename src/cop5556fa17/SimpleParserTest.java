@@ -1,16 +1,10 @@
 package cop5556fa17;
 
-import static org.junit.Assert.*;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
 import cop5556fa17.Scanner.LexicalException;
-import cop5556fa17.Scanner.Token;
 import cop5556fa17.SimpleParser.SyntaxException;
-
-import static cop5556fa17.Scanner.Kind.*;
 
 public class SimpleParserTest {
 
@@ -30,8 +24,8 @@ public class SimpleParserTest {
 
 
 	/**
-	 * Simple test case with an empty program.  This test 
-	 * expects an SyntaxException because all legal programs must
+	 * Simple test case with an empty parse.  This test 
+	 * expects an SyntaxException because all legal parses must
 	 * have at least an identifier
 	 *   
 	 * @throws LexicalException
@@ -46,7 +40,7 @@ public class SimpleParserTest {
 		SimpleParser parser = new SimpleParser(scanner);  //Create a parser
 		thrown.expect(SyntaxException.class);
 		try {
-		parser.parse();  //Parse the program
+		parser.parse();  //Parse the parse
 		}
 		catch (SyntaxException e) {
 			show(e);
@@ -55,7 +49,7 @@ public class SimpleParserTest {
 	}
 
 	
-	/** Another example.  This is a legal program and should pass when 
+	/** Another example.  This is a legal parse and should pass when 
 	 * your parser is implemented.
 	 * 
 	 * @throws LexicalException
@@ -64,128 +58,15 @@ public class SimpleParserTest {
 
 	@Test
 	public void testDec1() throws LexicalException, SyntaxException {
-		String input = "prog "
-		        + " int k; "
-		        + " image[56/34,67/34] cgh ; "
-		        + " image svf <- @(x+y+2/4*5*r*Z);"
-		        + " image vkdj ; "
-		        + " boolean k = true;"
-		        + " int k = a + 76/9 * 67; "
-		        + " url vgjvbhvj = \"vhvjhm\"; "
-		        + " url fbdjob = vjsdlv ;"
-		        + " file file_name = @(x+y+a*X) ; "
-		        + " //this is a commment  ; ";
+		String input = "prog int k;";
 		show(input);
 		Scanner scanner = new Scanner(input).scan();  //Create a Scanner and initialize it
 		//show(scanner);   //Display the Scanner
 		SimpleParser parser = new SimpleParser(scanner);  //
 		parser.parse();
 	}
-	//positive test cases
-	@Test
-    public void statement() throws LexicalException, SyntaxException {
-        String input = "prog sai [[x,y]] = (67/x*y);"
-                + "sgf[[r,A]] = 534657+x ;"
-                + "nath -> screen ;"
-                + "gsf ->vfgh ;"
-                + "reddy <- @x+y ;"
-                + "dtgbg = u[534/x,67+y];";
-        show(input);
-        Scanner scanner = new Scanner(input).scan();  //Create a Scanner and initialize it
-        //show(scanner);   //Display the Scanner
-        SimpleParser parser = new SimpleParser(scanner);  //
-        parser.parse();
-    }
-	@Test
-    public void expressionabs() throws LexicalException, SyntaxException {
-        String input = "abs(x/y);";
-        show(input);
-        Scanner scanner = new Scanner(input).scan();  //Create a Scanner and initialize it
-        //show(scanner);   //Display the Scanner
-        SimpleParser parser = new SimpleParser(scanner);  //
-        parser.expression();
-    }
-	@Test
-    public void expressionsin() throws LexicalException, SyntaxException {
-        String input = "sin[x/y,a/A];";
-        show(input);
-        Scanner scanner = new Scanner(input).scan();  //Create a Scanner and initialize it
-        //show(scanner);   //Display the Scanner
-        SimpleParser parser = new SimpleParser(scanner);  //
-        parser.expression();
-    }
-	@Test
-    public void expressionsin1() throws LexicalException, SyntaxException {
-        String input = "sin(DEF_X);";
-        show(input);
-        Scanner scanner = new Scanner(input).scan();  //Create a Scanner and initialize it
-        //show(scanner);   //Display the Scanner
-        SimpleParser parser = new SimpleParser(scanner);  //
-        parser.expression();
-    }
-	@Test
-    public void expressioncos() throws LexicalException, SyntaxException {
-        String input = "cos(DEF_Y);";
-        show(input);
-        Scanner scanner = new Scanner(input).scan();  //Create a Scanner and initialize it
-        //show(scanner);   //Display the Scanner
-        SimpleParser parser = new SimpleParser(scanner);  //
-        parser.expression();
-    }
-	@Test
-    public void expressionatan() throws LexicalException, SyntaxException {
-        String input = "atan[R,r] / abs(34+23+A-R/Y);";
-        show(input);
-        Scanner scanner = new Scanner(input).scan();  //Create a Scanner and initialize it
-        //show(scanner);   //Display the Scanner
-        SimpleParser parser = new SimpleParser(scanner);  //
-        parser.expression();
-    }
-	@Test
-    public void expressioncartx() throws LexicalException, SyntaxException {
-        String input = "cart_x[(45*(X)/Z)>54*Y,a+!A+R+r+y*Y-DEF_X /DEF_Y > (x/X)]; ";
-        show(input);
-        Scanner scanner = new Scanner(input).scan();  //Create a Scanner and initialize it
-        //show(scanner);   //Display the Scanner
-        SimpleParser parser = new SimpleParser(scanner);  //
-        parser.expression();
-    }
-	@Test
-    public void expressioncarty() throws LexicalException, SyntaxException {
-        String input = "cart_y(y*x);";
-        show(input);
-        Scanner scanner = new Scanner(input).scan();  //Create a Scanner and initialize it
-        //show(scanner);   //Display the Scanner
-        SimpleParser parser = new SimpleParser(scanner);  //
-        parser.expression();
-    }
-	@Test
-    public void expressionpolar() throws LexicalException, SyntaxException {
-        String input = "polar_a(54*76);";
-        show(input);
-        Scanner scanner = new Scanner(input).scan();  //Create a Scanner and initialize it
-        //show(scanner);   //Display the Scanner
-        SimpleParser parser = new SimpleParser(scanner);  //
-        parser.expression();
-    }
-	@Test
-    public void expressionident() throws LexicalException, SyntaxException {
-        String input = "gdhv[54,67]";
-        show(input);
-        Scanner scanner = new Scanner(input).scan();  //Create a Scanner and initialize it
-        //show(scanner);   //Display the Scanner
-        SimpleParser parser = new SimpleParser(scanner);  //
-        parser.expression();
-    }
-	@Test
-    public void expressionunary() throws LexicalException, SyntaxException {
-        String input = "x ? 323:y";
-        show(input);
-        Scanner scanner = new Scanner(input).scan();  //Create a Scanner and initialize it
-        //show(scanner);   //Display the Scanner
-        SimpleParser parser = new SimpleParser(scanner);  //
-        parser.expression();
-    }
+	
+
 	/**
 	 * This example invokes the method for expression directly. 
 	 * Effectively, we are viewing Expression as the start
@@ -201,15 +82,814 @@ public class SimpleParserTest {
 	 */
 	@Test
 	public void expression1() throws SyntaxException, LexicalException {
-		String input = "2+3 /4";
+		String input = "Kw_a";
 		show(input);
 		Scanner scanner = new Scanner(input).scan();  
 		//show(scanner);   
 		SimpleParser parser = new SimpleParser(scanner);  
 		parser.expression();  //Call expression directly.  
 	}
-
-
 	
+	
+	@Test
+	public void testcase1() throws SyntaxException, LexicalException {
+		String input = "2";
+		show(input);
+		Scanner scanner = new Scanner(input).scan();  
+		//show(scanner);   
+		SimpleParser parser = new SimpleParser(scanner);
+		thrown.expect(SyntaxException.class);
+		try {
+		parser.parse();  //Parse the parse
+		}
+		catch (SyntaxException e) {
+			show(e);
+			throw e;
+		} 
 	}
 
+	
+	@Test
+	public void testcase2() throws SyntaxException, LexicalException {
+		String input = "a bcd";
+		show(input);
+		Scanner scanner = new Scanner(input).scan();  
+		//show(scanner);   
+		SimpleParser parser = new SimpleParser(scanner);
+		thrown.expect(SyntaxException.class);
+		try {
+		parser.parse();  //Parse the parse
+		}
+		catch (SyntaxException e) {
+			show(e);
+			throw e;
+		} 
+	}
+	
+	@Test
+	public void testcase3() throws SyntaxException, LexicalException {
+		String input = "cart_x cart_y";
+		show(input);
+		Scanner scanner = new Scanner(input).scan();  
+		//show(scanner);   
+		SimpleParser parser = new SimpleParser(scanner);
+		thrown.expect(SyntaxException.class);
+		try {
+		parser.parse();  //Parse the parse
+		}
+		catch (SyntaxException e) {
+			show(e);
+			throw e;
+		} 
+	}
+	
+	@Test
+	public void testcase4() throws SyntaxException, LexicalException {
+		String input = "prog int 2";
+		show(input);
+		Scanner scanner = new Scanner(input).scan();  
+		//show(scanner);   
+		SimpleParser parser = new SimpleParser(scanner);
+		thrown.expect(SyntaxException.class);
+		try {
+		parser.parse();  //Parse the parse
+		}
+		catch (SyntaxException e) {
+			show(e);
+			throw e;
+		} 
+	}
+	
+	@Test
+	public void testcase5() throws SyntaxException, LexicalException {
+		String input = "prog image[filepng,png] imageName <- imagepng"; //Error as there is not semicolon for ending the statement
+		show(input);
+		Scanner scanner = new Scanner(input).scan();  
+		//show(scanner);   
+		SimpleParser parser = new SimpleParser(scanner);
+		//parser.parse();
+		thrown.expect(SyntaxException.class);
+		try {
+		parser.parse();  //Parse the parse
+		}
+		catch (SyntaxException e) {
+			show(e);
+			throw e;
+		} 
+	}
+	
+	@Test
+	public void testcase6() throws SyntaxException, LexicalException {
+		String input = "imageDeclaration image[\"abcd\"] "; //Should fail for image[""]
+		show(input);
+		Scanner scanner = new Scanner(input).scan();  
+		//show(scanner);   
+		SimpleParser parser = new SimpleParser(scanner);
+		thrown.expect(SyntaxException.class);
+		try {
+		parser.parse();  //Parse the parse
+		}
+		catch (SyntaxException e) {
+			show(e);
+			throw e;
+		} 
+	}
+
+	
+	@Test
+	public void testcase7() throws SyntaxException, LexicalException {
+		String input = "prog image[filepng,png] imageName <- imagepng; \n boolean ab=true;"; 
+		show(input);
+		Scanner scanner = new Scanner(input).scan();  
+		//show(scanner);   
+		SimpleParser parser = new SimpleParser(scanner);
+		parser.parse();
+	}
+	
+	@Test
+	public void testcase8() throws SyntaxException, LexicalException {
+		String input = "prog image[filepng,jpg] imageName;"; 
+		show(input);
+		Scanner scanner = new Scanner(input).scan();  
+		//show(scanner);   
+		SimpleParser parser = new SimpleParser(scanner);
+		parser.parse();
+	}
+	
+	@Test
+	public void testcase9() throws SyntaxException, LexicalException {
+		String input = "prog image imageName;"; 
+		show(input);
+		Scanner scanner = new Scanner(input).scan();  
+		//show(scanner);   
+		SimpleParser parser = new SimpleParser(scanner);
+		parser.parse();
+	}
+	
+	@Test
+	public void testcase10() throws SyntaxException, LexicalException {
+		String input = "prog @expr k=12;"; 
+		show(input);
+		Scanner scanner = new Scanner(input).scan();  
+		//show(scanner);   
+		SimpleParser parser = new SimpleParser(scanner);
+		thrown.expect(SyntaxException.class);
+		try {
+		parser.parse();  //Parse the parse
+		}
+		catch (SyntaxException e) {
+			show(e);
+			throw e;
+		} 
+	}
+	
+	@Test
+	public void testcase11() throws SyntaxException, LexicalException {
+		String input = "prog \"abcded\" boolean a=true;"; 
+		show(input);
+		Scanner scanner = new Scanner(input).scan();  
+		//show(scanner);   
+		SimpleParser parser = new SimpleParser(scanner);
+		thrown.expect(SyntaxException.class);
+		try {
+		parser.parse();  //Parse the parse
+		}
+		catch (SyntaxException e) {
+			show(e);
+			throw e;
+		} 
+	}
+	
+	@Test
+	public void testcase12() throws SyntaxException, LexicalException {
+		String input = "isBoolean boolean ab=true; boolean cd==true; abcd=true ? return true: return false;"; //Should fail for ==
+		show(input);
+		Scanner scanner = new Scanner(input).scan();  
+		//show(scanner);   
+		SimpleParser parser = new SimpleParser(scanner);
+		thrown.expect(SyntaxException.class);
+		try {
+		parser.parse();  //Parse the parse
+		}
+		catch (SyntaxException e) {
+			show(e);
+			throw e;
+		} 
+	}
+	
+	@Test
+	public void testcase13() throws SyntaxException, LexicalException {
+		String input = "isBoolean boolean ab=true; boolean cd==true; abcd=true ? return true: return false;"; //Should fail for =
+		show(input);
+		Scanner scanner = new Scanner(input).scan();  
+		//show(scanner);   
+		SimpleParser parser = new SimpleParser(scanner);
+		thrown.expect(SyntaxException.class);
+		try {
+		parser.parse();  //Parse the parse
+		}
+		catch (SyntaxException e) {
+			show(e);
+			throw e;
+		} 
+	}
+	
+	
+	@Test
+	public void testcase14() throws SyntaxException, LexicalException {
+		String input = "isUrl url filepng=\"abcd\"; \n @expr=12; url awesome=@expr; \n url filepng=abcdefg"; 
+		show(input);
+		Scanner scanner = new Scanner(input).scan();  
+		//show(scanner);   
+		SimpleParser parser = new SimpleParser(scanner);
+		thrown.expect(SyntaxException.class);
+		try {
+		parser.parse();  //Parse the parse
+		}
+		catch (SyntaxException e) {
+			show(e);
+			throw e;
+		}  
+	}
+	
+	@Test
+	public void testcase15() throws SyntaxException, LexicalException {
+		String input = "isUrl url filepng=\"abcd\" \n @expr=12; url awesome=@expr; \n url filepng=abcdefg"; //Should fail for ; in line one
+		show(input);
+		Scanner scanner = new Scanner(input).scan();  
+		//show(scanner);   
+		SimpleParser parser = new SimpleParser(scanner);
+		thrown.expect(SyntaxException.class);
+		try {
+		parser.parse();  //Parse the parse
+		}
+		catch (SyntaxException e) {
+			show(e);
+			throw e;
+		}  
+	}
+	
+
+	@Test
+	public void testcase16() throws SyntaxException, LexicalException {
+		String input = "isFile file filepng=\"abcd\"; \n @expr=12; url filepng=@expr; \n url filepng=abcdefg"; 
+		show(input);
+		Scanner scanner = new Scanner(input).scan();  
+		//show(scanner);   
+		SimpleParser parser = new SimpleParser(scanner);
+		thrown.expect(SyntaxException.class);
+		try {
+		parser.parse();  //Parse the parse
+		}
+		catch (SyntaxException e) {
+			show(e);
+			throw e;
+		}  
+	}
+	
+	@Test
+	public void testcase17() throws SyntaxException, LexicalException {
+		String input =  "isFile file filepng=\"abcd\" \n @expr=12; url filepng=@expr; \n url filepng=abcdefg";  //Should fail for ; in line one
+		show(input);
+		Scanner scanner = new Scanner(input).scan();  
+		//show(scanner);   
+		SimpleParser parser = new SimpleParser(scanner);
+		thrown.expect(SyntaxException.class);
+		try {
+		parser.parse();  //Parse the parse
+		}
+		catch (SyntaxException e) {
+			show(e);
+			throw e;
+		}  
+	}
+	
+	@Test
+	public void testcase18() throws SyntaxException, LexicalException {
+		String input =  "isurl url urlname;";  //Should fail for url as url can only be initalised
+		show(input);
+		Scanner scanner = new Scanner(input).scan();  
+		//show(scanner);   
+		SimpleParser parser = new SimpleParser(scanner);
+		thrown.expect(SyntaxException.class);
+		try {
+		parser.parse();  //Parse the parse
+		}
+		catch (SyntaxException e) {
+			show(e);
+			throw e;
+		}  
+	}
+	
+	@Test
+	public void testcase19() throws SyntaxException, LexicalException {
+		String input =  "declaration int xyz;\n boolean zya;\n image imagename;";  
+		show(input);
+		Scanner scanner = new Scanner(input).scan();  
+		//show(scanner);   
+		SimpleParser parser = new SimpleParser(scanner);
+		parser.parse();  //Parse the parse
+	}
+	
+	@Test
+	public void testcase20() throws SyntaxException, LexicalException {
+		String input =  "imageProgram image imageName;"
+				+ "\n imageName->abcdpng; "
+				+ "\n imageName -> SCREEN; "
+				+ "\n imageName <- \"awesome\";"
+				+ "\n imageName <- @express; \n"
+				+ "\n imageName <- abcdpng;";  // Image related Test cases
+		Scanner scanner = new Scanner(input).scan();  
+		//show(scanner);   
+		SimpleParser parser = new SimpleParser(scanner);
+		parser.parse();  //Parse the parse
+	}
+	
+	@Test
+	public void testcase21() throws SyntaxException, LexicalException { 
+		String input =  "assign int abc=123456;\n"
+				+ "abc[[x,y]]=123456;\n"
+				+ "abc[[r,A]]=123244;\n";//Assignment statement
+		Scanner scanner = new Scanner(input).scan();  
+		//show(scanner);   
+		SimpleParser parser = new SimpleParser(scanner);
+		parser.parse();  //Parse the parse
+	}
+
+
+	@Test
+	public void testcase22() throws SyntaxException, LexicalException {
+		String input =  "assign int abc=123456;\n"
+				+ "abc[[x]]=123456;\n"
+				+ "abc[[r,A]]=123244;\n";  //Error
+		show(input);
+		Scanner scanner = new Scanner(input).scan();  
+		//show(scanner);   
+		SimpleParser parser = new SimpleParser(scanner);
+		thrown.expect(SyntaxException.class);
+		try {
+		parser.parse();  //Parse the parse
+		}
+		catch (SyntaxException e) {
+			show(e);
+			throw e;
+		}  
+	}
+	
+	@Test
+	public void testcase23() throws SyntaxException, LexicalException {
+		String input =  "assign int abc=123456;\n"
+				+ "abc[[x,y]]=123456;\n"
+				+ "abc[[A]]=123244;\n";//Error
+		show(input);
+		Scanner scanner = new Scanner(input).scan();  
+		//show(scanner);   
+		SimpleParser parser = new SimpleParser(scanner);
+		thrown.expect(SyntaxException.class);
+		try {
+		parser.parse();  //Parse the parse
+		}
+		catch (SyntaxException e) {
+			show(e);
+			throw e;
+		}  
+	}
+	
+	// Function Name Testcases
+	@Test
+	public void testcase24() throws SyntaxException, LexicalException {
+		String input =  " sin \n cos \n atan \n abs \n cart_x \n cart_y \n polar_a \n polar_r\n";
+		show(input);
+		Scanner scanner = new Scanner(input).scan();  
+		//show(scanner);   
+		SimpleParser parser = new SimpleParser(scanner);
+		parser.Functionname(); //Parse the parse
+	}
+	
+	//LhsSelector ::= LSQUARE  ( XySelector  | RaSelector  )   RSQUARE
+	
+	@Test
+	public void testcase25() throws SyntaxException, LexicalException {
+		String input =  "[x,y] \n [r,A] \n []";
+		show(input);
+		Scanner scanner = new Scanner(input).scan();  
+		//show(scanner);   
+		SimpleParser parser = new SimpleParser(scanner);
+		thrown.expect(SyntaxException.class);
+        try {
+        parser.lhsSelector();
+        parser.lhsSelector();
+        parser.lhsSelector(); 
+        }
+        catch (SyntaxException e) {
+            show(e);
+            throw e;
+        } 
+	}
+	
+	@Test
+	public void testcase26() throws SyntaxException, LexicalException {
+		String input =  "[x,]";
+		show(input);
+		Scanner scanner = new Scanner(input).scan();  
+		//show(scanner);   
+		SimpleParser parser = new SimpleParser(scanner);
+		thrown.expect(SyntaxException.class);
+		try {
+			parser.lhsSelector();   //Parse the parse
+		}
+		catch (SyntaxException e) {
+			show(e);
+			throw e;
+		} 
+		 
+	}
+	
+	@Test
+	public void testcase27() throws SyntaxException, LexicalException {
+		String input =  "[,A]";
+		show(input);
+		Scanner scanner = new Scanner(input).scan();  
+		//show(scanner);   
+		SimpleParser parser = new SimpleParser(scanner);
+		thrown.expect(SyntaxException.class);
+		try {
+			parser.lhsSelector();   //Parse the parse
+		}
+		catch (SyntaxException e) {
+			show(e);
+			throw e;
+		} 
+		 
+	}
+	//		XySelector ::= KW_x COMMA KW_y
+	@Test
+	public void testcase28() throws SyntaxException, LexicalException {
+		String input =  "x,y";
+		show(input);
+		Scanner scanner = new Scanner(input).scan();  
+		//show(scanner);   
+		SimpleParser parser = new SimpleParser(scanner);
+		parser.XySelector(); 
+	}
+	
+	@Test
+	public void testcase29() throws SyntaxException, LexicalException {
+		String input =  "x";
+		show(input);
+		Scanner scanner = new Scanner(input).scan();  
+		//show(scanner);   
+		SimpleParser parser = new SimpleParser(scanner);
+		thrown.expect(SyntaxException.class);
+		try {
+			parser.lhsSelector();   //Parse the parse
+		}
+		catch (SyntaxException e) {
+			show(e);
+			throw e;
+		}
+	}
+	//		RaSelector ::= KW_r COMMA KW_A
+	@Test
+	public void testcase30() throws SyntaxException, LexicalException {
+		String input =  "r,A";
+		show(input);
+		Scanner scanner = new Scanner(input).scan();  
+		//show(scanner);   
+		SimpleParser parser = new SimpleParser(scanner);
+		parser.RaSelector(); 
+	}
+	
+	@Test
+	public void testcase31() throws SyntaxException, LexicalException {
+		String input =  ",A";
+		show(input);
+		Scanner scanner = new Scanner(input).scan();  
+		//show(scanner);   
+		SimpleParser parser = new SimpleParser(scanner);
+		thrown.expect(SyntaxException.class);
+		try {
+			parser.RaSelector();   //Parse the parse
+		}
+		catch (SyntaxException e) {
+			show(e);
+			throw e;
+		}
+	}
+	
+
+	@Test
+	public void testcase32() throws SyntaxException, LexicalException {
+		String input =  "r,";
+		show(input);
+		Scanner scanner = new Scanner(input).scan();  
+		//show(scanner);   
+		SimpleParser parser = new SimpleParser(scanner);
+		thrown.expect(SyntaxException.class);
+		try {
+			parser.RaSelector();   //Parse the parse
+		}
+		catch (SyntaxException e) {
+			show(e);
+			throw e;
+		}
+	}
+//	
+	// Expression 
+	@Test
+	public void testcase33() throws SyntaxException, LexicalException {
+		String input =  "x y r a X Y Z A R DEF_X DEF_Y";
+		show(input);
+		Scanner scanner = new Scanner(input).scan();  
+		//show(scanner);   
+		SimpleParser parser = new SimpleParser(scanner);
+		parser.expression();   //Parse the parse
+	}
+	
+	@Test
+	public void testcase34() throws SyntaxException, LexicalException {
+		String input =  "5+3*4+5%3";
+		show(input);
+		Scanner scanner = new Scanner(input).scan();  
+		//show(scanner);   
+		SimpleParser parser = new SimpleParser(scanner);
+		parser.expression();   //Parse the parse
+	}	
+	@Test
+	public void testcase35() throws SyntaxException, LexicalException {
+		String input =  "x+y+y+r+X-Y-Z-A+R+DEF_X+DEF_Y+!(5+6+(true+false))\n"
+				+ " abcd[(x+tyxzsd),(12+123+45)] \n"
+				+ " sin(x+y) cos(x+y) atan(x+y) abs(x+y) cart_x(x+y) cart_y(x+y) polar_a(x+y) polar_r(r+a)";
+		show(input);
+		Scanner scanner = new Scanner(input).scan();  
+		//show(scanner);   
+		SimpleParser parser = new SimpleParser(scanner);
+		parser.expression();   //Parse the parse
+	}
+	
+	
+	@Test
+	public void testcase36() throws SyntaxException, LexicalException {
+		String input =  "r==IdentOrPixelSelectorExpression[5,6]";
+		show(input);
+		Scanner scanner = new Scanner(input).scan();  
+		//show(scanner);   
+		SimpleParser parser = new SimpleParser(scanner);
+		parser.expression();   //Parse the parse
+	}
+		
+	@Test
+	public void testcase37() throws SyntaxException, LexicalException {
+		String input =  "sin(x)+cos(x)-atan(x)+cart_x(x)+cart_y(y)+polar_a(a)+polar_r(a)";
+		show(input);
+		Scanner scanner = new Scanner(input).scan();  
+		//show(scanner);   
+		SimpleParser parser = new SimpleParser(scanner);
+		parser.expression();   //Parse the parse
+	}
+	
+	@Test
+	public void testcase38() throws SyntaxException, LexicalException {
+		String input =  "sin(x)+cos(x)-atan(x)+cart_x(x)+cart_y(y)+polar_a(a)+polar_r(a)";
+		show(input);
+		Scanner scanner = new Scanner(input).scan();  
+		//show(scanner);   
+		SimpleParser parser = new SimpleParser(scanner);
+		parser.expression();   //Parse the parse
+	}
+	
+	@Test
+	public void testcase39() throws SyntaxException, LexicalException {
+		String input =  "sin[(x+y),(x+z)]+cos[(x+y),(x+z)]+polar_r[vyz+xx,z+xx]";
+		show(input);
+		Scanner scanner = new Scanner(input).scan();  
+		//show(scanner);   
+		SimpleParser parser = new SimpleParser(scanner);
+		parser.expression(); 
+	}	
+	@Test
+	public void testcase40() throws SyntaxException, LexicalException {
+		String input =  "y*Y";
+		show(input);
+		Scanner scanner = new Scanner(input).scan();  
+		//show(scanner);   
+		SimpleParser parser = new SimpleParser(scanner);
+		parser.expression(); 
+	}
+	
+	@Test
+	public void testcase41() throws SyntaxException, LexicalException {
+		String input =  "y*+"; //Should through an error
+		show(input);
+		Scanner scanner = new Scanner(input).scan();  
+		//show(scanner);   
+		SimpleParser parser = new SimpleParser(scanner);
+		thrown.expect(SyntaxException.class);
+		try {
+			parser.expression();   //Parse the parse
+		}
+		catch (SyntaxException e) {
+			show(e);
+			throw e;
+		}
+	}
+	
+	@Test
+	public void testcase42() throws SyntaxException, LexicalException {
+		String input =  "y/(x+Y*Y)"; 
+		show(input);
+		Scanner scanner = new Scanner(input).scan();  
+		//show(scanner);   
+		SimpleParser parser = new SimpleParser(scanner);
+		parser.expression();
+	}
+	
+	@Test
+	public void testcase43() throws SyntaxException, LexicalException {
+		String input =  "y/(x+Y*Y-sin(x+y)*cos(x+y)%2)"; 
+		show(input);
+		Scanner scanner = new Scanner(input).scan();  
+		//show(scanner);   
+		SimpleParser parser = new SimpleParser(scanner);
+		parser.expression();
+	}
+	
+	@Test
+	public void testcase44() throws SyntaxException, LexicalException {
+		String input =  "y/(x+Y*Y-sin(x+y)*cos(x+y)%2)"; 
+		show(input);
+		Scanner scanner = new Scanner(input).scan();  
+		//show(scanner);   
+		SimpleParser parser = new SimpleParser(scanner);
+		parser.expression();
+	}
+	
+	@Test
+	public void testcase45() throws SyntaxException, LexicalException {
+		String input =  "5+5-(x+y)*2%2"; 
+		show(input);
+		Scanner scanner = new Scanner(input).scan();  
+		//show(scanner);   
+		SimpleParser parser = new SimpleParser(scanner);
+		parser.expression();
+	}
+	
+	@Test
+	public void testcase46() throws SyntaxException, LexicalException {
+		String input =  "(5+10)>(6*2+4+sin(x)-atan(y)-x/y/z)"; 
+		show(input);
+		Scanner scanner = new Scanner(input).scan();  
+		//show(scanner);   
+		SimpleParser parser = new SimpleParser(scanner);
+		parser.expression();
+	}
+	
+	@Test
+	public void testcase47() throws SyntaxException, LexicalException {
+		String input =  "(5+10)<(6/2/3/4*2)"; 
+		show(input);
+		Scanner scanner = new Scanner(input).scan();  
+		//show(scanner);   
+		SimpleParser parser = new SimpleParser(scanner);
+		parser.expression();
+	}
+	
+	@Test
+	public void testcase48() throws SyntaxException, LexicalException {
+		String input =  "(6*2/23/4*22*sin(x))<=(abs(6*2*12)+cart_x[x,y]+cart_y[(6/23),(7/23)]+polar_a[6/2/2,2/3/4]+polar_r(z))"; 
+		show(input);
+		Scanner scanner = new Scanner(input).scan();  
+		//show(scanner);   
+		SimpleParser parser = new SimpleParser(scanner);
+		parser.expression();
+	}
+	
+	@Test
+	public void testcase49() throws SyntaxException, LexicalException {
+		String input =  "(6*2/23/4*22*sin(x))<=(abs(6*2*12)+cart_x[x,y]+cart_y[(6/23),(7/23)]+polar_a[6/2/2,2/3/4]+polar_r(z,y,x))";  //Should fail as () can hold only expression
+		show(input);
+		Scanner scanner = new Scanner(input).scan();  
+		//show(scanner);   
+		SimpleParser parser = new SimpleParser(scanner);
+		thrown.expect(SyntaxException.class);
+		try {
+			parser.expression();   //Parse the parse
+		}
+		catch (SyntaxException e) {
+			show(e);
+			throw e;
+		}
+	}
+	
+	@Test
+	public void testcase50() throws SyntaxException, LexicalException {
+		String input =  "(6*2/23/4*22*sin(x))>=(abs(6*2*12)+cart_x[x,y]+cart_y[(6/23),(7/23)]+polar_a[6/2/2,2/3/4]+polar_r(z,y,x))";  //Should fail as () can hold only expression
+		show(input);
+		Scanner scanner = new Scanner(input).scan();  
+		//show(scanner);   
+		SimpleParser parser = new SimpleParser(scanner);
+		thrown.expect(SyntaxException.class);
+		try {
+			parser.expression();   //Parse the parse
+		}
+		catch (SyntaxException e) {
+			show(e);
+			throw e;
+		}
+	}
+	
+	@Test
+	public void testcase51() throws SyntaxException, LexicalException {
+		String input =  "(6*2/23/4*22*sin(x))==(abs(6*2*12)+cart_x[x,y]+cart_y[(6/23),(7/23)]+polar_a[6/2/2,2/3/4]+polar_r(z))";
+		show(input);
+		Scanner scanner = new Scanner(input).scan();  
+		//show(scanner);   
+		SimpleParser parser = new SimpleParser(scanner);
+		parser.expression();   //Parse the parse
+	}
+	
+	@Test
+	public void testcase52() throws SyntaxException, LexicalException {
+		String input =  "(6*2/23/4*22*sin(x))!=(abs(6*2*12)+cart_x[x,y]+cart_y[(6/23),(7/23)]+polar_a[6/2/2,2/3/4]+polar_r(z))"; 
+		show(input);
+		Scanner scanner = new Scanner(input).scan();  
+		//show(scanner);   
+		SimpleParser parser = new SimpleParser(scanner);
+		parser.expression();   //Parse the parse
+	}
+	
+	@Test
+	public void testcase53() throws SyntaxException, LexicalException {
+		String input =  "(6*2/23/4*22*sin(x))&(abs(6*2*12)+cart_x[x,y]+cart_y[(6/23),(7/23)]+polar_a[6/2/2,2/3/4]+polar_r(z))|false"; 
+		show(input);
+		Scanner scanner = new Scanner(input).scan();  
+		//show(scanner);   
+		SimpleParser parser = new SimpleParser(scanner);
+		parser.expression();   //Parse the parse
+	}
+	
+	@Test
+	public void testcase54() throws SyntaxException, LexicalException {
+		String input =  "(6*2/23/4*22*sin(x))|(abs(6*2*12)+cart_x[x,y]+cart_y[(6/23),(7/23)]+polar_a[6/2/2,2/3/4]+polar_r(z))&true"; 
+		show(input);
+		Scanner scanner = new Scanner(input).scan();  
+		//show(scanner);   
+		SimpleParser parser = new SimpleParser(scanner);
+		parser.expression();   //Parse the parse
+	}
+	
+
+	@Test
+	public void testcase55() throws SyntaxException, LexicalException {
+		String input =  "(6*2/23/4*22*sin(x))||(abs(6*2*12)+cart_x[x,y]+cart_y[(6/23),(7/23)]+polar_a[6/2/2,2/3/4]+polar_r(z))&true"; 
+		show(input);
+		Scanner scanner = new Scanner(input).scan();  
+		//show(scanner);   
+		SimpleParser parser = new SimpleParser(scanner);
+		thrown.expect(SyntaxException.class);
+		try {
+			parser.expression();   //Parse the parse
+		}
+		catch (SyntaxException e) {
+			show(e);
+			throw e;
+		}
+	}
+	
+	@Test
+	public void testcase56() throws SyntaxException, LexicalException {
+		String input =  "(6*2/23/4*22*sin(x))|(abs(6*2*12)+cart_x[x,y]+cart_y[(6/23),(7/23)]+polar_a[6/2/2,2/3/4]+polar_r(z))&&true"; 
+		show(input);
+		Scanner scanner = new Scanner(input).scan();  
+		//show(scanner);   
+		SimpleParser parser = new SimpleParser(scanner);
+		thrown.expect(SyntaxException.class);
+		try {
+			parser.expression();   //Parse the parse
+		}
+		catch (SyntaxException e) {
+			show(e);
+			throw e;
+		}
+	}
+	
+	@Test
+	public void testcase57() throws SyntaxException, LexicalException {
+		String input =  "prog s = sin(a+b);";
+		show(input);
+		Scanner scanner = new Scanner(input).scan();  
+		//show(scanner);   
+		SimpleParser parser = new SimpleParser(scanner);
+		parser.parse();   //Parse the parse
+	}
+	
+	@Test
+	public void testcase58() throws SyntaxException, LexicalException {
+		String input =  "prog int abcd=(1000*1000+2);\n int b=(100-2+3);";
+		show(input);
+		Scanner scanner = new Scanner(input).scan();  
+		//show(scanner);   
+		SimpleParser parser = new SimpleParser(scanner);
+		parser.parse();   //Parse the parse
+	}
+}
