@@ -423,8 +423,6 @@ public class SimpleParser {
 	 */
 	 Token matchEOF() throws SyntaxException {
 		if (t.kind == EOF) {
-		    System.out.println(EOF);
-		    System.out.println();
 			return t;
 		}
 		String message =  "Expected EOL at " + t;
@@ -434,7 +432,7 @@ public class SimpleParser {
 	
 	 void match(Kind kind) throws SyntaxException {
         if (t.kind.equals(kind)) {
-            System.out.println(t.kind);
+            //System.out.println(t.kind);
             t = scanner.nextToken();
         }
         else throw new SyntaxException(t, "Syntax error : expected :" + kind + " got :" +t.kind);

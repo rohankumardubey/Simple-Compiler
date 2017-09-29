@@ -16,9 +16,7 @@ package cop5556fa17;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Stack;
 
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter.DEFAULT;
 
 public class Scanner {
     
