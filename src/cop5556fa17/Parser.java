@@ -37,8 +37,8 @@ public class Parser {
 	 * 
 	 * @throws SyntaxException
 	 */
-	public ASTNode parse() throws SyntaxException {
-		ASTNode astnode = program();
+	public Program parse() throws SyntaxException {
+		Program astnode = program();
 		matchEOF();
 		return astnode;
 	}
