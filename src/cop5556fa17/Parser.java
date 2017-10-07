@@ -3,10 +3,11 @@ package cop5556fa17;
 
 import cop5556fa17.Scanner.Kind;
 import cop5556fa17.Scanner.Token;
+import cop5556fa17.AST.*;
 
 import static cop5556fa17.Scanner.Kind.*;
 
-public class SimpleParser {
+public class Parser {
 
 	@SuppressWarnings("serial")
 	public class SyntaxException extends Exception {
@@ -22,7 +23,7 @@ public class SimpleParser {
 	Scanner scanner;
 	Token t;
 
-	SimpleParser(Scanner scanner) {
+	Parser(Scanner scanner) {
 		this.scanner = scanner;
 		t = scanner.nextToken();
 	}
@@ -33,9 +34,10 @@ public class SimpleParser {
 	 * 
 	 * @throws SyntaxException
 	 */
-	public void parse() throws SyntaxException {
-		program();
+	public ASTNode parse() throws SyntaxException {
+		ASTNode astnode = program();
 		matchEOF();
+		return astnode;
 	}
 	
 
@@ -46,8 +48,9 @@ public class SimpleParser {
 	 * 
 	 * @throws SyntaxException
 	 */
-	void program() throws SyntaxException {
+	Program program() throws SyntaxException {
 		//TODO  implement this
+	    Program ret ; //= new Program(firstToken, name, decsAndStatements);
         match(IDENTIFIER);
         while(t.kind.equals(KW_int) || t.kind.equals(KW_boolean) || t.kind.equals(KW_image)  
                 || t.kind.equals(KW_url) || t.kind.equals(KW_file)  || t.kind.equals(IDENTIFIER)){
@@ -62,6 +65,7 @@ public class SimpleParser {
             }
         
          }
+        return ret;
 	 }
 
 	
