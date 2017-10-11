@@ -76,18 +76,17 @@ public class Parser {
 
 	 ASTNode Statement()  throws SyntaxException {
         // TODO Auto-generated method stub
-        
+        Token ft = t;
         match(IDENTIFIER);
-        if(t.kind.equals(OP_ASSIGN)|| t.kind.equals(LSQUARE)) return(Assignment());
-        else if(t.kind.equals(OP_RARROW)) return(ImageOutStatement());
-        else if(t.kind.equals(OP_LARROW)) return(ImageInStatement());
+        if(t.kind.equals(OP_ASSIGN)|| t.kind.equals(LSQUARE)) return(Assignment(ft));
+        else if(t.kind.equals(OP_RARROW)) return(ImageOutStatement(ft));
+        else if(t.kind.equals(OP_LARROW)) return(ImageInStatement(ft));
         else throw new SyntaxException(t, "Syntax error "+t);
     
     }
 
-     Statement_In ImageInStatement() throws SyntaxException {
+     Statement_In ImageInStatement(Token ft) throws SyntaxException {
         // TODO Auto-generated method stub
-         Token ft = t;   
          match(OP_LARROW);
          Source s = Source();
          return new Statement_In(ft, ft, s);
@@ -109,33 +108,30 @@ public class Parser {
         
     }
 
-     Statement_Out ImageOutStatement() throws SyntaxException {
+     Statement_Out ImageOutStatement(Token ft) throws SyntaxException {
         // TODO Auto-generated method stub
-        Token ft = t; 
          match(OP_RARROW);
         Sink s = sink();
         return new Statement_Out(ft, ft, s);
     }
 
-     Statement_Assign Assignment() throws SyntaxException {
+     Statement_Assign Assignment(Token ft) throws SyntaxException {
         // TODO Auto-generated method stub
-        Token ft = t;
-        LHS l = lhs();
+        LHS l = lhs(ft);
         match(OP_ASSIGN);
         Expression e = expression();
         return new Statement_Assign(ft, l, e);
     }
 
-     LHS lhs() throws SyntaxException {
+     LHS lhs(Token ft) throws SyntaxException {
         // TODO Auto-generated method stub
         if(t.kind.equals(LSQUARE)){
-            Token ft = t;
             match(LSQUARE);
             Index i =  lhsSelector();
             match(RSQUARE);
             return new LHS(ft, ft, i);
         }
-        return null;
+        return new LHS(ft, ft, null);
         
     }
 
@@ -191,7 +187,8 @@ public class Parser {
 
      Declaration_Variable VariableDeclaration() throws SyntaxException  {
         // TODO Auto-generated method stub
-        Token ft = varType();
+        Token ft = t;
+        varType();
         Token name = t;
         match(IDENTIFIER);
         Expression e = null;
@@ -203,17 +200,17 @@ public class Parser {
               
     }
 
-     Token varType()  throws SyntaxException {
+     void varType()  throws SyntaxException {
         // TODO Auto-generated method stub
         if(t.kind.equals(KW_int)) {
-            Token ret = t;
+           
             match(KW_int);
-            return ret;
+            
         }
         else if(t.kind.equals(KW_boolean)) {
-            Token ret = t;
+            
             match(KW_boolean);
-            return ret;
+            
         }
         else throw new SyntaxException(t, "syntax error in token:" + t);
         
@@ -488,7 +485,7 @@ public class Parser {
         // TODO Auto-generated method stub
          Token ft = t;
         match(IDENTIFIER);
-        Expression_PixelSelector ep = IndentOrPixNext();
+        Expression_PixelSelector ep = IndentOrPixNext(ft);
         if(ep == null){
             return new Expression_Ident(ft, ft);
         }
@@ -497,9 +494,8 @@ public class Parser {
     }
     
 
-     Expression_PixelSelector IndentOrPixNext() throws SyntaxException {
+     Expression_PixelSelector IndentOrPixNext(Token ft) throws SyntaxException {
         // TODO Auto-generated method stub
-        Token ft = t;
          if(t.kind.equals(LSQUARE)){
             match(LSQUARE);
             Index i = Selector();
