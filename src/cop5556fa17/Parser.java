@@ -398,10 +398,10 @@ public class Parser {
         Expression e1 = null;
         e0 = AndExpression();
         while (t.kind.equals(OP_OR)) {
-
+            Token op = t;
             match(OP_OR);
             e1 = AndExpression();
-            e0 = new Expression_Binary(e0.firstToken, e0, t, e1);
+            e0 = new Expression_Binary(e0.firstToken, e0, op, e1);
         }
         return e0;
     }
@@ -608,7 +608,7 @@ public class Parser {
             return new Expression_IntLit(ft, ft.intVal());
         } else if (t.kind.equals(BOOLEAN_LITERAL)) {
             match(BOOLEAN_LITERAL);
-            return new Expression_BooleanLit(ft, t.getText().equals("true"));
+            return new Expression_BooleanLit(ft, ft.getText().equals("true"));
         } else if (t.kind.equals(LPAREN)) {
             match(LPAREN);
             Expression e = expression();
