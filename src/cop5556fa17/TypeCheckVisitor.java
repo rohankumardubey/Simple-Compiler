@@ -1,11 +1,13 @@
 package cop5556fa17;
 
 import cop5556fa17.Scanner.Token;
+import cop5556fa17.TypeUtils.Type;
 import cop5556fa17.AST.ASTNode;
 import cop5556fa17.AST.ASTVisitor;
 import cop5556fa17.AST.Declaration_Image;
 import cop5556fa17.AST.Declaration_SourceSink;
 import cop5556fa17.AST.Declaration_Variable;
+import cop5556fa17.AST.Expression;
 import cop5556fa17.AST.Expression_Binary;
 import cop5556fa17.AST.Expression_BooleanLit;
 import cop5556fa17.AST.Expression_Conditional;
@@ -30,7 +32,8 @@ import cop5556fa17.AST.Statement_Out;
 
 public class TypeCheckVisitor implements ASTVisitor {
 	
-
+    SymbolTable s = new SymbolTable();
+    
 		@SuppressWarnings("serial")
 		public static class SemanticException extends Exception {
 			Token t;
@@ -41,6 +44,8 @@ public class TypeCheckVisitor implements ASTVisitor {
 			}
 
 		}		
+		
+		
 		
 
 	
@@ -63,7 +68,17 @@ public class TypeCheckVisitor implements ASTVisitor {
 			Declaration_Variable declaration_Variable, Object arg)
 			throws Exception {
 		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException();
+	    if(s.iscontains(declaration_Variable.name)) 
+            throw  new SemanticException(declaration_Variable.firstToken, 
+                    "Symantic exeption at "+ declaration_Variable.firstToken.toString());
+        declaration_Variable.vtype = TypeUtils.getType(declaration_Variable.firstToken);
+        s.insert(declaration_Variable.name, declaration_Variable);
+        Expression e0 = null;
+        e0 = (Expression) declaration_Variable.e.visit(this, null);
+        if(e0 != null && declaration_Variable.vtype != e0.vtype) 
+            throw  new SemanticException(declaration_Variable.firstToken, 
+                    "Symantic exeption at "+ declaration_Variable.firstToken.toString());        
+        return declaration_Variable.type;
 	}
 
 	@Override
@@ -105,8 +120,11 @@ public class TypeCheckVisitor implements ASTVisitor {
 	@Override
 	public Object visitDeclaration_Image(Declaration_Image declaration_Image,
 			Object arg) throws Exception {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException();
+	    if(s.iscontains(declaration_Image.name)) throw  new SemanticException(
+	            (Token) arg,"Symantic exeption at "+ arg.toString());
+	    declaration_Image.vtype = Type.IMAGE;
+	    s.insert(declaration_Image.name, declaration_Image);
+	    return declaration_Image.vtype;
 	}
 
 	@Override
@@ -137,7 +155,12 @@ public class TypeCheckVisitor implements ASTVisitor {
 			Declaration_SourceSink declaration_SourceSink, Object arg)
 			throws Exception {
 		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException();
+	    if(s.iscontains(declaration_SourceSink.name)) 
+	        throw  new SemanticException(declaration_SourceSink.firstToken, 
+	                "Symantic exeption at "+ declaration_SourceSink.firstToken.toString());
+        declaration_SourceSink.vtype = TypeUtils.getType(declaration_SourceSink.firstToken);
+        s.insert(declaration_SourceSink.name, declaration_SourceSink);
+        return declaration_SourceSink.type;
 	}
 
 	@Override
@@ -189,6 +212,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 	public Object visitStatement_Assign(Statement_Assign statement_Assign,
 			Object arg) throws Exception {
 		// TODO Auto-generated method stub
+	    Type t = (Type)statement_Assign.lhs.visit(this, null);
 		throw new UnsupportedOperationException();
 	}
 
