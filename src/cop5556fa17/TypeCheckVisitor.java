@@ -70,13 +70,15 @@ public class TypeCheckVisitor implements ASTVisitor {
 			Declaration_Variable declaration_Variable, Object arg)
 			throws Exception {
 		// TODO Auto-generated method stub
+	    Type e0t = Type.NONE;
+	    if(declaration_Variable.e!=null)  e0t = (Type) declaration_Variable.e.visit(this, null);
 	    if(s.iscontains(declaration_Variable.name)) 
             throw  new SemanticException(declaration_Variable.firstToken, 
                     "Symantic exeption at : "+ declaration_Variable.firstToken.toString());
         declaration_Variable.vtype = TypeUtils.getType(declaration_Variable.firstToken);
         s.insert(declaration_Variable.name, declaration_Variable);
         
-         Type e0t = (Type) declaration_Variable.e.visit(this, null);
+         
         if(declaration_Variable.e!= null && declaration_Variable.vtype != e0t) 
             throw  new SemanticException(declaration_Variable.firstToken, 
                     "Symantic exeption at "+ declaration_Variable.firstToken.toString());        
@@ -179,6 +181,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 			Expression_PixelSelector expression_PixelSelector, Object arg)
 			throws Exception {
 		// TODO Auto-generated method stub
+	    if(expression_PixelSelector.index != null) expression_PixelSelector.index.visit(this, null);
 	    if(!s.iscontains(expression_PixelSelector.name)){
 	        throw  new SemanticException(expression_PixelSelector.firstToken,
 	                "Symantic exeption at "+ expression_PixelSelector.firstToken.toString());
@@ -225,7 +228,11 @@ public class TypeCheckVisitor implements ASTVisitor {
                     "Symantic exeption at "+ declaration_Image.firstToken.toString()); 
 	    }
 	    //declaration_Image.xSize.
-	    
+	    declaration_Image.source.visit(this, null);
+	    if(declaration_Image.xSize != null){
+	        declaration_Image.xSize.visit(this, null);
+	        declaration_Image.ySize.visit(this, null);
+	    }
 	    declaration_Image.vtype = Type.IMAGE;
 	    s.insert(declaration_Image.name, declaration_Image);
 	    return declaration_Image.vtype;
@@ -290,6 +297,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 			Declaration_SourceSink declaration_SourceSink, Object arg)
 			throws Exception {
 		// TODO Auto-generated method stub
+	    declaration_SourceSink.source.visit(this, null);
 	    if(s.iscontains(declaration_SourceSink.name)) 
 	        throw  new SemanticException(declaration_SourceSink.firstToken, 
 	                "Symantic exeption at "+ declaration_SourceSink.firstToken.toString());
@@ -342,6 +350,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 	public Object visitStatement_Out(Statement_Out statement_Out, Object arg)
 			throws Exception {
 		// TODO Auto-generated method stub
+	    Type sinkType = (Type)statement_Out.sink.visit(this, null);
 		statement_Out.setDec(s.getfromSymboltable(statement_Out.name));
 		if(!s.iscontains(statement_Out.name)){
 		    throw  new SemanticException(
@@ -349,7 +358,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 		    
 		}
 		Declaration d = s.getfromSymboltable(statement_Out.name);
-		Type sinkType = (Type)statement_Out.sink.visit(this, null);
+		
 		if(((d.vtype == Type.INTEGER || d.vtype == Type.BOOLEAN) && sinkType == Type.BOOLEAN) || 
 		        (d.vtype == Type.IMAGE && (sinkType == Type.FILE || sinkType == Type.SCREEN))) {
 		            
@@ -392,6 +401,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 	@Override
 	public Object visitLHS(LHS lhs, Object arg) throws Exception {
 		// TODO Auto-generated method stub
+	    boolean indexcart = (boolean) lhs.index.visit(this, arg);
 	    if(!s.iscontains(lhs.name)){
 	        throw  new SemanticException(
 	                lhs.firstToken,
@@ -400,7 +410,6 @@ public class TypeCheckVisitor implements ASTVisitor {
 	    }
 		lhs.setDec(s.getfromSymboltable(lhs.name));
 		lhs.vtype = lhs.getDec().vtype;
-		boolean indexcart = (boolean) lhs.index.visit(this, arg);
 		lhs.setCartesian(indexcart);
 		return lhs.vtype;
 	}
