@@ -1,9 +1,14 @@
 package cop5556fa17;
 
+import java.io.EOFException;
+import java.net.URL;
+
+import cop5556fa17.Scanner.Kind;
 import cop5556fa17.Scanner.Token;
 import cop5556fa17.TypeUtils.Type;
 import cop5556fa17.AST.ASTNode;
 import cop5556fa17.AST.ASTVisitor;
+import cop5556fa17.AST.Declaration;
 import cop5556fa17.AST.Declaration_Image;
 import cop5556fa17.AST.Declaration_SourceSink;
 import cop5556fa17.AST.Declaration_Variable;
@@ -78,14 +83,56 @@ public class TypeCheckVisitor implements ASTVisitor {
         if(e0 != null && declaration_Variable.vtype != e0.vtype) 
             throw  new SemanticException(declaration_Variable.firstToken, 
                     "Symantic exeption at "+ declaration_Variable.firstToken.toString());        
-        return declaration_Variable.type;
+        return declaration_Variable.vtype;
 	}
 
 	@Override
 	public Object visitExpression_Binary(Expression_Binary expression_Binary,
 			Object arg) throws Exception {
 		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException();
+		Type e0t = (Type) expression_Binary.e0.visit(this, null);
+		Type e1t = (Type) expression_Binary.e1.visit(this, null);
+		switch (expression_Binary.op) {
+            case OP_EQ:
+            case OP_NEQ:
+                expression_Binary.vtype = Type.BOOLEAN;
+                break;
+                
+            case OP_GE :
+            case OP_GT:
+            case OP_LT:
+            case OP_LE:
+                if(e0t == Type.INTEGER){
+                    expression_Binary.vtype = Type.INTEGER;
+                }          
+                break;
+            case OP_AND:
+            case OP_OR:
+                if(e0t == Type.INTEGER || e0t == Type.BOOLEAN){
+                    expression_Binary.vtype = e0t;
+                }
+                break;
+            case OP_DIV:
+            case OP_MINUS:
+            case OP_MOD:
+            case OP_PLUS:
+            case OP_POWER:
+            case OP_TIMES:
+                if(e0t == Type.INTEGER){
+                    expression_Binary.vtype = Type.INTEGER;
+                }
+    
+            default:
+                break;
+        }
+		if(e0t != e1t && expression_Binary.vtype == Type.NONE){
+		    throw  new SemanticException(expression_Binary.firstToken, 
+                    "Symantic exeption at "+ expression_Binary.firstToken.toString());   
+		    	    
+		}
+		return expression_Binary.vtype;
+		
+		
 	}
 
 	@Override
@@ -98,7 +145,17 @@ public class TypeCheckVisitor implements ASTVisitor {
 	@Override
 	public Object visitIndex(Index index, Object arg) throws Exception {
 		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException();
+		Type e0type = (Type)index.e0.visit(this, null);
+		Type e1Type = (Type)index.e1.visit(this, null);
+		if(e0type == Type.INTEGER && e1Type == Type.INTEGER){
+		    
+		}
+		else {
+		    throw  new SemanticException(index.firstToken, 
+                    "Symantic exeption at "+ index.firstToken.toString()); 
+		}
+		index.setCartesian(!(index.e0.firstToken.kind ==Kind.KW_r && index.e1.firstToken.kind == Kind.KW_A ));
+		return index.isCartesian();
 	}
 
 	@Override
@@ -114,14 +171,29 @@ public class TypeCheckVisitor implements ASTVisitor {
 			Expression_Conditional expression_Conditional, Object arg)
 			throws Exception {
 		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException();
+		Type econType = (Type)expression_Conditional.condition.visit(this, null);
+		Type etrueType = (Type) expression_Conditional.trueExpression.visit(this, null);
+		Type efalseType = (Type) expression_Conditional.falseExpression.visit(this, null);
+		expression_Conditional.vtype = etrueType;
+		if(econType == Type.BOOLEAN && etrueType == efalseType){
+		
+		}
+		else{
+		    throw  new SemanticException(expression_Conditional.firstToken, 
+                    "Symantic exeption at "+ expression_Conditional.firstToken.toString()); 
+		    
+		}
+		return expression_Conditional.vtype;
 	}
 
 	@Override
 	public Object visitDeclaration_Image(Declaration_Image declaration_Image,
 			Object arg) throws Exception {
-	    if(s.iscontains(declaration_Image.name)) throw  new SemanticException(
-	            (Token) arg,"Symantic exeption at "+ arg.toString());
+	    if(s.iscontains(declaration_Image.name)) {
+	        throw  new SemanticException(declaration_Image.firstToken, 
+                    "Symantic exeption at "+ declaration_Image.firstToken.toString()); 
+	    }
+	    //declaration_Image.xSize.
 	    declaration_Image.vtype = Type.IMAGE;
 	    s.insert(declaration_Image.name, declaration_Image);
 	    return declaration_Image.vtype;
@@ -132,7 +204,8 @@ public class TypeCheckVisitor implements ASTVisitor {
 			Source_StringLiteral source_StringLiteral, Object arg)
 			throws Exception {
 		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException();
+	    URL u = new URL(source_StringLiteral.fileOrUrl);
+	    UrlValidator urlValidator = new UrlValidator();
 	}
 
 	@Override
@@ -140,14 +213,32 @@ public class TypeCheckVisitor implements ASTVisitor {
 			Source_CommandLineParam source_CommandLineParam, Object arg)
 			throws Exception {
 		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException();
+	    source_CommandLineParam.paramNum.visit(this, null);
+		source_CommandLineParam.vtype = source_CommandLineParam.paramNum.vtype;
+		if(source_CommandLineParam.vtype == Type.INTEGER){
+		    
+		}
+		else {
+            throw  new SemanticException(source_CommandLineParam.firstToken, 
+                    "Symantic exeption at "+ source_CommandLineParam.firstToken.toString()); 
+        }
+		return source_CommandLineParam.vtype;
 	}
 
 	@Override
 	public Object visitSource_Ident(Source_Ident source_Ident, Object arg)
 			throws Exception {
 		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException();
+		Declaration d = s.getfromSymboltable(source_Ident.name);
+		source_Ident.vtype = d.vtype;
+		if(source_Ident.vtype == Type.FILE || source_Ident.vtype == Type.URL){
+		    
+		}
+		else {
+            throw  new SemanticException(source_Ident.firstToken, 
+                    "Symantic exeption at "+ source_Ident.firstToken.toString()); 
+        }
+		return source_Ident.vtype;
 	}
 
 	@Override
@@ -198,42 +289,85 @@ public class TypeCheckVisitor implements ASTVisitor {
 	public Object visitStatement_Out(Statement_Out statement_Out, Object arg)
 			throws Exception {
 		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException();
+		statement_Out.setDec(s.getfromSymboltable(statement_Out.name));
+		if(!s.iscontains(statement_Out.name)){
+		    throw  new SemanticException(
+                    statement_Out.firstToken,"Symantic exeption at "+ statement_Out.firstToken.toString());
+		    
+		}
+		Declaration d = s.getfromSymboltable(statement_Out.name);
+		Type sinkType = (Type)statement_Out.sink.visit(this, null);
+		if(((d.vtype == Type.INTEGER || d.vtype == Type.BOOLEAN) && sinkType == Type.BOOLEAN) || 
+		        (d.vtype == Type.IMAGE && (sinkType == Type.FILE || sinkType == Type.SCREEN))) {
+		            
+		}
+		else{
+		     throw  new SemanticException(
+	                 statement_Out.firstToken,"Symantic exeption at "+ statement_Out.firstToken.toString());
+		}
+		return statement_Out.vtype;
+		
 	}
 
 	@Override
 	public Object visitStatement_In(Statement_In statement_In, Object arg)
 			throws Exception {
 		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException();
+	    Type sourceType = (Type)statement_In.source.visit(this, null);
+		if(!s.iscontains(statement_In.name) && s.getfromSymboltable(statement_In.name).vtype != sourceType) {
+		    throw  new SemanticException(
+	                statement_In.firstToken,"Symantic exeption at "+ statement_In.firstToken.toString());
+		}
+	    statement_In.setDec(s.getfromSymboltable(statement_In.name)); 
+		
+		return statement_In.vtype;
+	    
 	}
 
 	@Override
 	public Object visitStatement_Assign(Statement_Assign statement_Assign,
 			Object arg) throws Exception {
 		// TODO Auto-generated method stub
-	    Type t = (Type)statement_Assign.lhs.visit(this, null);
-		throw new UnsupportedOperationException();
+	    Type lhsType = (Type)statement_Assign.lhs.visit(this, null);
+	    Type expType = (Type)statement_Assign.e.visit(this, null);
+	    if (lhsType!=expType ) throw  new SemanticException(
+                statement_Assign.firstToken,"Symantic exeption at "+ statement_Assign.firstToken.toString());
+	    statement_Assign.setCartesian(statement_Assign.lhs.isCartesian);
+	    return statement_Assign.vtype;
 	}
 
 	@Override
 	public Object visitLHS(LHS lhs, Object arg) throws Exception {
 		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException();
+		lhs.setDec(s.getfromSymboltable(lhs.name));
+		lhs.vtype = lhs.getDec().vtype;
+		boolean indexcart = (boolean) lhs.index.visit(this, arg);
+		lhs.setCartesian(indexcart);
+		return lhs.vtype;
 	}
 
 	@Override
 	public Object visitSink_SCREEN(Sink_SCREEN sink_SCREEN, Object arg)
 			throws Exception {
 		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException();
+	    sink_SCREEN.vtype = Type.BOOLEAN;
+	    return sink_SCREEN.vtype;
 	}
 
 	@Override
 	public Object visitSink_Ident(Sink_Ident sink_Ident, Object arg)
 			throws Exception {
 		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException();
+		sink_Ident.vtype = s.getfromSymboltable(sink_Ident.name).vtype;
+		if(sink_Ident.vtype == Type.FILE){
+		    
+		}
+		else{
+		    throw  new SemanticException(
+	                sink_Ident.firstToken,"Symantic exeption at "+ sink_Ident.firstToken.toString());
+		    
+		}
+		return sink_Ident.vtype;
 	}
 
 	@Override
@@ -241,7 +375,8 @@ public class TypeCheckVisitor implements ASTVisitor {
 			Expression_BooleanLit expression_BooleanLit, Object arg)
 			throws Exception {
 		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException();
+		expression_BooleanLit.vtype = Type.BOOLEAN;
+		return expression_BooleanLit;
 	}
 
 	@Override

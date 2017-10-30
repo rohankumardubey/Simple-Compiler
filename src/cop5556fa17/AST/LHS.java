@@ -6,15 +6,26 @@ public class LHS extends ASTNode{
 
 	public final String name;
 	public final Index index;
+	public boolean isCartesian;
 
-
-
+	//I inserted
+	Declaration dec;  //declaration for name.  Set during type checking
+    public void setDec(Declaration dec) {this.dec = dec;}
+    public Declaration getDec() {return dec;}
+    
 	public LHS(Token firstToken, Token name, Index index) {
 		super(firstToken);
 		this.name = name.getText();
 		this.index = index;
 	}
-
+	//I inserted 
+	public boolean isCartesian() {
+        return isCartesian;
+    }
+    public void setCartesian(boolean isCartesian) {
+        this.isCartesian = isCartesian;
+    }
+    
 	@Override
 	public Object visit(ASTVisitor v, Object arg) throws Exception {
 		return v.visitLHS(this,arg);
