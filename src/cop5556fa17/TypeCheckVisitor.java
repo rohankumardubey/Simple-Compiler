@@ -72,12 +72,12 @@ public class TypeCheckVisitor implements ASTVisitor {
 		// TODO Auto-generated method stub
 	    if(s.iscontains(declaration_Variable.name)) 
             throw  new SemanticException(declaration_Variable.firstToken, 
-                    "Symantic exeption at "+ declaration_Variable.firstToken.toString());
+                    "Symantic exeption at : "+ declaration_Variable.firstToken.toString());
         declaration_Variable.vtype = TypeUtils.getType(declaration_Variable.firstToken);
         s.insert(declaration_Variable.name, declaration_Variable);
-        Expression e0 = null;
+        
          Type e0t = (Type) declaration_Variable.e.visit(this, null);
-        if(declaration_Variable.e!= null && declaration_Variable.vtype != e0.vtype) 
+        if(declaration_Variable.e!= null && declaration_Variable.vtype != e0t) 
             throw  new SemanticException(declaration_Variable.firstToken, 
                     "Symantic exeption at "+ declaration_Variable.firstToken.toString());        
         return declaration_Variable.vtype;
@@ -382,6 +382,12 @@ public class TypeCheckVisitor implements ASTVisitor {
 	@Override
 	public Object visitLHS(LHS lhs, Object arg) throws Exception {
 		// TODO Auto-generated method stub
+	    if(!s.iscontains(lhs.name)){
+	        throw  new SemanticException(
+	                lhs.firstToken,
+	                "Symantic exeption at "+ lhs.firstToken.toString());
+	        
+	    }
 		lhs.setDec(s.getfromSymboltable(lhs.name));
 		lhs.vtype = lhs.getDec().vtype;
 		boolean indexcart = (boolean) lhs.index.visit(this, arg);
@@ -402,13 +408,9 @@ public class TypeCheckVisitor implements ASTVisitor {
 			throws Exception {
 		// TODO Auto-generated method stub
 		sink_Ident.vtype = s.getfromSymboltable(sink_Ident.name).vtype;
-		if(sink_Ident.vtype == Type.FILE){
-		    
-		}
-		else{
-		    throw  new SemanticException(
-	                sink_Ident.firstToken,"Symantic exeption at "+ sink_Ident.firstToken.toString());
-		    
+		if(sink_Ident.vtype != Type.FILE){
+		    throw  new SemanticException(sink_Ident.firstToken,
+                    "Symantic exeption at "+ sink_Ident.firstToken.toString());   
 		}
 		return sink_Ident.vtype;
 	}
