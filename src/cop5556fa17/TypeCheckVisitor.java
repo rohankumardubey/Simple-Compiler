@@ -1,8 +1,5 @@
 package cop5556fa17;
 
-import java.io.EOFException;
-import java.net.URL;
-
 import cop5556fa17.Scanner.Kind;
 import cop5556fa17.Scanner.Token;
 import cop5556fa17.TypeUtils.Type;
@@ -79,8 +76,8 @@ public class TypeCheckVisitor implements ASTVisitor {
         declaration_Variable.vtype = TypeUtils.getType(declaration_Variable.firstToken);
         s.insert(declaration_Variable.name, declaration_Variable);
         Expression e0 = null;
-        e0 = (Expression) declaration_Variable.e.visit(this, null);
-        if(e0 != null && declaration_Variable.vtype != e0.vtype) 
+         Type e0t = (Type) declaration_Variable.e.visit(this, null);
+        if(declaration_Variable.e!= null && declaration_Variable.vtype != e0.vtype) 
             throw  new SemanticException(declaration_Variable.firstToken, 
                     "Symantic exeption at "+ declaration_Variable.firstToken.toString());        
         return declaration_Variable.vtype;
@@ -139,7 +136,25 @@ public class TypeCheckVisitor implements ASTVisitor {
 	public Object visitExpression_Unary(Expression_Unary expression_Unary,
 			Object arg) throws Exception {
 		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException();
+		Type expType = (Type) expression_Unary.e.visit(this, null);
+		switch (expression_Unary.op) {
+        case OP_EXCL:
+            if((expType == Type.BOOLEAN || expType ==Type.INTEGER)) expression_Unary.vtype = expType;
+            break;
+        case OP_PLUS:
+        case OP_MINUS:
+            if(expType == Type.INTEGER) expression_Unary.vtype = expType;
+
+        default:
+            break;
+        }
+		if(expression_Unary.vtype == Type.NONE){
+		    throw  new SemanticException(expression_Unary.firstToken, 
+                    "Symantic exeption at "+ expression_Unary.firstToken.toString());   
+		    		    
+		}
+		return expression_Unary.vtype;
+		
 	}
 
 	@Override
@@ -163,7 +178,17 @@ public class TypeCheckVisitor implements ASTVisitor {
 			Expression_PixelSelector expression_PixelSelector, Object arg)
 			throws Exception {
 		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException();
+		Type nameType = s.getfromSymboltable(expression_PixelSelector.name).vtype;
+		
+		if(nameType == Type.IMAGE){
+		    expression_PixelSelector.vtype = Type.INTEGER;
+		}
+		else if(expression_PixelSelector.index == null) expression_PixelSelector.vtype = nameType;
+		if(expression_PixelSelector.vtype == Type.NONE){
+		    throw  new SemanticException(expression_PixelSelector.firstToken, 
+                    "Symantic exeption at "+ expression_PixelSelector.firstToken.toString()); 
+		}
+		return expression_PixelSelector.vtype;
 	}
 
 	@Override
@@ -194,6 +219,7 @@ public class TypeCheckVisitor implements ASTVisitor {
                     "Symantic exeption at "+ declaration_Image.firstToken.toString()); 
 	    }
 	    //declaration_Image.xSize.
+	    
 	    declaration_Image.vtype = Type.IMAGE;
 	    s.insert(declaration_Image.name, declaration_Image);
 	    return declaration_Image.vtype;
@@ -204,8 +230,16 @@ public class TypeCheckVisitor implements ASTVisitor {
 			Source_StringLiteral source_StringLiteral, Object arg)
 			throws Exception {
 		// TODO Auto-generated method stub
-	    URL u = new URL(source_StringLiteral.fileOrUrl);
-	    UrlValidator urlValidator = new UrlValidator();
+	    
+	    //implement URL validator
+	    boolean isvalid = true;
+	    
+	    if(isvalid){
+	        source_StringLiteral.vtype = Type.URL;
+	    }
+	    else source_StringLiteral.vtype = Type.FILE;
+	    return source_StringLiteral.vtype;
+	    
 	}
 
 	@Override
@@ -258,7 +292,8 @@ public class TypeCheckVisitor implements ASTVisitor {
 	public Object visitExpression_IntLit(Expression_IntLit expression_IntLit,
 			Object arg) throws Exception {
 		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException();
+		expression_IntLit.vtype = Type.INTEGER;
+		return expression_IntLit.vtype;
 	}
 
 	@Override
@@ -266,7 +301,13 @@ public class TypeCheckVisitor implements ASTVisitor {
 			Expression_FunctionAppWithExprArg expression_FunctionAppWithExprArg,
 			Object arg) throws Exception {
 		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException();
+	    Type expType = (Type) expression_FunctionAppWithExprArg.arg.visit(this, null);
+	    if(expType != Type.INTEGER){
+	        throw  new SemanticException(expression_FunctionAppWithExprArg.firstToken, 
+                    "Symantic exeption at "+ expression_FunctionAppWithExprArg.firstToken.toString());
+	    }
+	    expression_FunctionAppWithExprArg.vtype =  expType;
+		return expression_FunctionAppWithExprArg.vtype;
 	}
 
 	@Override
@@ -274,7 +315,8 @@ public class TypeCheckVisitor implements ASTVisitor {
 			Expression_FunctionAppWithIndexArg expression_FunctionAppWithIndexArg,
 			Object arg) throws Exception {
 		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException();
+		expression_FunctionAppWithIndexArg.vtype = Type.INTEGER;
+		return expression_FunctionAppWithIndexArg.vtype;
 	}
 
 	@Override
@@ -282,7 +324,8 @@ public class TypeCheckVisitor implements ASTVisitor {
 			Expression_PredefinedName expression_PredefinedName, Object arg)
 			throws Exception {
 		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException();
+		expression_PredefinedName.vtype = Type.INTEGER;
+		return expression_PredefinedName.vtype;
 	}
 
 	@Override
@@ -383,7 +426,8 @@ public class TypeCheckVisitor implements ASTVisitor {
 	public Object visitExpression_Ident(Expression_Ident expression_Ident,
 			Object arg) throws Exception {
 		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException();
+		expression_Ident.vtype = s.getfromSymboltable(expression_Ident.name).vtype;
+		return expression_Ident.vtype;
 	}
 
 }
