@@ -97,6 +97,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 		// TODO Auto-generated method stub
 		Type e0t = (Type) expression_Binary.e0.visit(this, null);
 		Type e1t = (Type) expression_Binary.e1.visit(this, null);
+		
 		switch (expression_Binary.op) {
             case OP_EQ:
             case OP_NEQ:
@@ -183,8 +184,8 @@ public class TypeCheckVisitor implements ASTVisitor {
 		    throw  new SemanticException(index.firstToken, 
                     "Symantic exeption at "+ index.firstToken.toString()); 
 		}
-		index.setCartesian(!(index.e0.firstToken.kind ==Kind.KW_r && 
-		        index.e1.firstToken.kind == Kind.KW_A ));
+		index.setCartesian(!(index.e0.firstToken.kind ==Kind.KW_r && index.e0.getClass() == Expression_PredefinedName.class && 
+		        index.e1.firstToken.kind == Kind.KW_a && index.e1.getClass() == Expression_PredefinedName.class));
 		return index.isCartesian();
 	}
 
