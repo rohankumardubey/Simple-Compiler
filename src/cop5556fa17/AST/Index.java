@@ -15,6 +15,7 @@ public class Index extends ASTNode {
 		super(firstToken);
 		this.e0 = e0;
 		this.e1 = e1;
+		this.isCartesian = false;
 	}
 	
 	

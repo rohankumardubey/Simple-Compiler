@@ -1,5 +1,7 @@
 package cop5556fa17;
 
+import java.net.URL;
+
 import cop5556fa17.Scanner.Kind;
 import cop5556fa17.Scanner.Token;
 import cop5556fa17.TypeUtils.Type;
@@ -70,18 +72,22 @@ public class TypeCheckVisitor implements ASTVisitor {
 			Declaration_Variable declaration_Variable, Object arg)
 			throws Exception {
 		// TODO Auto-generated method stub
-	    Type e0t = Type.NONE;
-	    if(declaration_Variable.e!=null)  e0t = (Type) declaration_Variable.e.visit(this, null);
 	    if(s.iscontains(declaration_Variable.name)) 
             throw  new SemanticException(declaration_Variable.firstToken, 
                     "Symantic exeption at : "+ declaration_Variable.firstToken.toString());
-        declaration_Variable.vtype = TypeUtils.getType(declaration_Variable.firstToken);
+       
+	    declaration_Variable.vtype = TypeUtils.getType(declaration_Variable.firstToken);
+	    if(declaration_Variable.e!=null)  {
+	        Type e0t = (Type) declaration_Variable.e.visit(this, null);
+	        if(e0t == declaration_Variable.vtype){
+	            
+	        }
+	        else
+	            throw  new SemanticException(declaration_Variable.firstToken, 
+	                    "Symantic exeption at "+ declaration_Variable.firstToken.toString());                   
+	        
+	    }
         s.insert(declaration_Variable.name, declaration_Variable);
-        
-         
-        if(declaration_Variable.e!= null && declaration_Variable.vtype != e0t) 
-            throw  new SemanticException(declaration_Variable.firstToken, 
-                    "Symantic exeption at "+ declaration_Variable.firstToken.toString());        
         return declaration_Variable.vtype;
 	}
 
@@ -102,7 +108,7 @@ public class TypeCheckVisitor implements ASTVisitor {
             case OP_LT:
             case OP_LE:
                 if(e0t == Type.INTEGER){
-                    expression_Binary.vtype = Type.INTEGER;
+                    expression_Binary.vtype = Type.BOOLEAN;
                 }          
                 break;
             case OP_AND:
@@ -124,7 +130,10 @@ public class TypeCheckVisitor implements ASTVisitor {
             default:
                 break;
         }
-		if(e0t != e1t && expression_Binary.vtype == Type.NONE){
+		if(e0t == e1t && expression_Binary.vtype != Type.NONE){
+		
+		}
+		else{
 		    throw  new SemanticException(expression_Binary.firstToken, 
                     "Symantic exeption at "+ expression_Binary.firstToken.toString());   
 		    	    
@@ -151,7 +160,9 @@ public class TypeCheckVisitor implements ASTVisitor {
         default:
             break;
         }
-		if(expression_Unary.vtype == Type.NONE){
+		if(expression_Unary.vtype != Type.NONE){
+		}
+		else{
 		    throw  new SemanticException(expression_Unary.firstToken, 
                     "Symantic exeption at "+ expression_Unary.firstToken.toString());   
 		    		    
@@ -172,7 +183,8 @@ public class TypeCheckVisitor implements ASTVisitor {
 		    throw  new SemanticException(index.firstToken, 
                     "Symantic exeption at "+ index.firstToken.toString()); 
 		}
-		index.setCartesian(!(index.e0.firstToken.kind ==Kind.KW_x && index.e1.firstToken.kind == Kind.KW_y ));
+		index.setCartesian(!(index.e0.firstToken.kind ==Kind.KW_r && 
+		        index.e1.firstToken.kind == Kind.KW_A ));
 		return index.isCartesian();
 	}
 
@@ -192,8 +204,11 @@ public class TypeCheckVisitor implements ASTVisitor {
 		if(nameType == Type.IMAGE){
 		    expression_PixelSelector.vtype = Type.INTEGER;
 		}
-		else if(expression_PixelSelector.index == null) expression_PixelSelector.vtype = nameType;
-		if(expression_PixelSelector.vtype == Type.NONE){
+		else if(expression_PixelSelector.index == null) 
+		    expression_PixelSelector.vtype = nameType;
+		if(expression_PixelSelector.vtype != Type.NONE){
+		}
+		else{
 		    throw  new SemanticException(expression_PixelSelector.firstToken, 
                     "Symantic exeption at "+ expression_PixelSelector.firstToken.toString()); 
 		}
@@ -228,15 +243,44 @@ public class TypeCheckVisitor implements ASTVisitor {
                     "Symantic exeption at "+ declaration_Image.firstToken.toString()); 
 	    }
 	    //declaration_Image.xSize.
-	    declaration_Image.source.visit(this, null);
+	    
 	    if(declaration_Image.xSize != null){
-	        declaration_Image.xSize.visit(this, null);
-	        declaration_Image.ySize.visit(this, null);
+	        Type xtype = (Type) declaration_Image.xSize.visit(this, null);
+	        Type ytype = Type.NONE;
+	        if(declaration_Image.ySize!= null)
+	            ytype = (Type) declaration_Image.ySize.visit(this, null);
+	        else
+	            throw  new SemanticException(declaration_Image.firstToken, 
+	                    "Symantic exeption at "+ declaration_Image.firstToken.toString()); 
+	       if(xtype == Type.INTEGER && ytype == Type.INTEGER){
+	           
+	       }
+	       else{
+	           throw  new SemanticException(declaration_Image.firstToken, 
+                       "Symantic exeption at "+ declaration_Image.firstToken.toString());
+	       }
+	            
 	    }
+	    if(declaration_Image.source != null)
+            declaration_Image.source.visit(this, null);
+	    
 	    declaration_Image.vtype = Type.IMAGE;
 	    s.insert(declaration_Image.name, declaration_Image);
 	    return declaration_Image.vtype;
 	}
+	                                                                                // for URL verificaltion
+	public static boolean isValidUrl(String surl)
+    {
+        try
+        {
+            URL url = new URL(surl);
+            url.toURI();
+            return true;
+        } catch (Exception exception)
+        {
+            return false;
+        }
+    }
 
 	@Override
 	public Object visitSource_StringLiteral(
@@ -245,7 +289,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 		// TODO Auto-generated method stub
 	    
 	    //implement URL validator
-	    boolean isvalid = true;
+	    boolean isvalid = isValidUrl(source_StringLiteral.fileOrUrl);
 	    
 	    if(isvalid){
 	        source_StringLiteral.vtype = Type.URL;
@@ -281,6 +325,13 @@ public class TypeCheckVisitor implements ASTVisitor {
 	                "Symantic exeption at "+ source_Ident.firstToken.toString());
 	    }
 		Declaration d = s.getfromSymboltable(source_Ident.name);
+		if (d == null){
+		    throw  new SemanticException(source_Ident.firstToken, 
+                    "Symantic exeption at "+ 
+                    source_Ident.firstToken.toString()); 
+        
+		    
+		}
 		source_Ident.vtype = d.vtype;
 		if(source_Ident.vtype == Type.FILE || source_Ident.vtype == Type.URL){
 		    
@@ -297,13 +348,19 @@ public class TypeCheckVisitor implements ASTVisitor {
 			Declaration_SourceSink declaration_SourceSink, Object arg)
 			throws Exception {
 		// TODO Auto-generated method stub
-	    declaration_SourceSink.source.visit(this, null);
 	    if(s.iscontains(declaration_SourceSink.name)) 
-	        throw  new SemanticException(declaration_SourceSink.firstToken, 
-	                "Symantic exeption at "+ declaration_SourceSink.firstToken.toString());
-        declaration_SourceSink.vtype = TypeUtils.getType(declaration_SourceSink.firstToken);
+            throw  new SemanticException(declaration_SourceSink.firstToken, 
+                    "Symantic exeption at "+ declaration_SourceSink.firstToken.toString());
+	    Type sourceType = (Type) declaration_SourceSink.source.visit(this, null);
+	    declaration_SourceSink.vtype = TypeUtils.getType(declaration_SourceSink.firstToken);
         s.insert(declaration_SourceSink.name, declaration_SourceSink);
-        return declaration_SourceSink.type;
+        if(sourceType == declaration_SourceSink.vtype ){}
+        else {
+            throw  new SemanticException(declaration_SourceSink.firstToken, 
+                    "Symantic exeption at "+ declaration_SourceSink.firstToken.toString());
+            
+        }
+        return declaration_SourceSink.vtype;
 	}
 
 	@Override
@@ -320,7 +377,9 @@ public class TypeCheckVisitor implements ASTVisitor {
 			Object arg) throws Exception {
 		// TODO Auto-generated method stub
 	    Type expType = (Type) expression_FunctionAppWithExprArg.arg.visit(this, null);
-	    if(expType != Type.INTEGER){
+	    if(expType == Type.INTEGER){
+	    }
+	    else{
 	        throw  new SemanticException(expression_FunctionAppWithExprArg.firstToken, 
                     "Symantic exeption at "+ expression_FunctionAppWithExprArg.firstToken.toString());
 	    }
@@ -350,16 +409,16 @@ public class TypeCheckVisitor implements ASTVisitor {
 	public Object visitStatement_Out(Statement_Out statement_Out, Object arg)
 			throws Exception {
 		// TODO Auto-generated method stub
-	    Type sinkType = (Type)statement_Out.sink.visit(this, null);
-		statement_Out.setDec(s.getfromSymboltable(statement_Out.name));
-		if(!s.iscontains(statement_Out.name)){
-		    throw  new SemanticException(
+	    if(!s.iscontains(statement_Out.name)){
+            throw  new SemanticException(
                     statement_Out.firstToken,"Symantic exeption at "+ statement_Out.firstToken.toString());
-		    
-		}
-		Declaration d = s.getfromSymboltable(statement_Out.name);
-		
-		if(((d.vtype == Type.INTEGER || d.vtype == Type.BOOLEAN) && sinkType == Type.BOOLEAN) || 
+            
+        }
+	    
+	    Type sinkType = (Type)statement_Out.sink.visit(this, null);
+	    Declaration d = s.getfromSymboltable(statement_Out.name);
+	    statement_Out.setDec(d);
+		if(d != null && ((d.vtype == Type.INTEGER || d.vtype == Type.BOOLEAN) && sinkType == Type.SCREEN) || 
 		        (d.vtype == Type.IMAGE && (sinkType == Type.FILE || sinkType == Type.SCREEN))) {
 		            
 		}
@@ -376,14 +435,20 @@ public class TypeCheckVisitor implements ASTVisitor {
 			throws Exception {
 		// TODO Auto-generated method stub
 	    Type sourceType = (Type)statement_In.source.visit(this, null);
-		if(!s.iscontains(statement_In.name) && s.getfromSymboltable(statement_In.name).vtype != sourceType) {
-		    throw  new SemanticException(
-	                statement_In.firstToken,"Symantic exeption at "+ statement_In.firstToken.toString());
+		if(!s.iscontains(statement_In.name)){
+		    }
+		Declaration d = s.getfromSymboltable(statement_In.name);
+	    statement_In.setDec(d);
+		if( d != null && d.vtype == sourceType){
+		    
 		}
-	    statement_In.setDec(s.getfromSymboltable(statement_In.name)); 
-		
+		else{
+		    throw  new SemanticException(
+                    statement_In.firstToken,"Symantic exeption at "
+                            + statement_In.firstToken.toString());   
+		    
+		}
 		return statement_In.vtype;
-	    
 	}
 
 	@Override
@@ -392,8 +457,11 @@ public class TypeCheckVisitor implements ASTVisitor {
 		// TODO Auto-generated method stub
 	    Type lhsType = (Type)statement_Assign.lhs.visit(this, null);
 	    Type expType = (Type)statement_Assign.e.visit(this, null);
-	    if (lhsType!=expType ) throw  new SemanticException(
-                statement_Assign.firstToken,"Symantic exeption at "+ statement_Assign.firstToken.toString());
+	    if (lhsType!=expType ) {
+	        throw  new SemanticException(
+                statement_Assign.firstToken,"Symantic exeption at "+ 
+                        statement_Assign.firstToken.toString());
+	    }
 	    statement_Assign.setCartesian(statement_Assign.lhs.isCartesian);
 	    return statement_Assign.vtype;
 	}
@@ -401,7 +469,11 @@ public class TypeCheckVisitor implements ASTVisitor {
 	@Override
 	public Object visitLHS(LHS lhs, Object arg) throws Exception {
 		// TODO Auto-generated method stub
-	    boolean indexcart = (boolean) lhs.index.visit(this, arg);
+	    if(lhs.index != null){
+	        boolean indexcart = (boolean) lhs.index.visit(this, arg);
+	        lhs.setCartesian(indexcart);
+	    }
+	    
 	    if(!s.iscontains(lhs.name)){
 	        throw  new SemanticException(
 	                lhs.firstToken,
@@ -410,7 +482,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 	    }
 		lhs.setDec(s.getfromSymboltable(lhs.name));
 		lhs.vtype = lhs.getDec().vtype;
-		lhs.setCartesian(indexcart);
+		
 		return lhs.vtype;
 	}
 
@@ -418,7 +490,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 	public Object visitSink_SCREEN(Sink_SCREEN sink_SCREEN, Object arg)
 			throws Exception {
 		// TODO Auto-generated method stub
-	    sink_SCREEN.vtype = Type.BOOLEAN;
+	    sink_SCREEN.vtype = Type.SCREEN;
 	    return sink_SCREEN.vtype;
 	}
 
@@ -428,11 +500,14 @@ public class TypeCheckVisitor implements ASTVisitor {
 		// TODO Auto-generated method stub
 	    if(!s.iscontains(sink_Ident.name)){
 	        throw  new SemanticException(sink_Ident.firstToken,
-	                "Symantic exeption at "+ sink_Ident.firstToken.toString());
+	                "Symantic exeption at "+
+	                 sink_Ident.firstToken.toString());
 	    }
 	    
 		sink_Ident.vtype = s.getfromSymboltable(sink_Ident.name).vtype;
-		if(sink_Ident.vtype != Type.FILE){
+		if(sink_Ident.vtype == Type.FILE){
+		}
+		else{
 		    throw  new SemanticException(sink_Ident.firstToken,
                     "Symantic exeption at "+ sink_Ident.firstToken.toString());   
 		}
@@ -445,7 +520,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 			throws Exception {
 		// TODO Auto-generated method stub
 		expression_BooleanLit.vtype = Type.BOOLEAN;
-		return expression_BooleanLit;
+		return expression_BooleanLit.vtype;
 	}
 
 	@Override

@@ -14,6 +14,7 @@ public class Statement_Assign extends Statement {
 		super(firstToken);
 		this.lhs = lhs;
 		this.e = e;
+		this.isCartesian = false;
 	}
 	
 	

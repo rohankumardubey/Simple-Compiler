@@ -17,6 +17,7 @@ public class LHS extends ASTNode{
 		super(firstToken);
 		this.name = name.getText();
 		this.index = index;
+		this.isCartesian = false;
 	}
 	//I inserted 
 	public boolean isCartesian() {
