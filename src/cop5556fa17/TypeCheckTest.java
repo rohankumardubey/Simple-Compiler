@@ -95,22 +95,85 @@ public class TypeCheckTest {
 	 * @throws Exception
 	 */
 	 @Test
-	 public void testDec1() throws Exception {
-	 String input = "prog int k = 42;";
+	 public void testDec11() throws Exception {
+	 String input = "prog boolean k = true | false;";
 	 typeCheck(input);
 	 }
 	 
-	 /**
-	  * This program does not declare k. The TypeCheckVisitor should
-	  * throw a SemanticException in a fully implemented assignment.
-	  * @throws Exception
-	  */
 	 @Test
-	 public void testUndec() throws Exception {
-	 String input = "prog k = 42;";
-	 thrown.expect(SemanticException.class);
-	 typeCheck(input);
-	 }
+     public void test111() throws Exception {
+     String input = "prog int i =  8 ;"
+             + "int k;"
+             + "boolean m = true | false ;"
+             + "boolean n = true ;"
+             + "image[x,y] im <- \"http://www.google.com/s.jpg\" ; \n\n"
+             + "url sou = \"http://vsfv\";"
+             + "file fie = \"filename.txt\" ;\n"
+             + "image img_im;"
+             + "k = 45;"
+             + "k = i + 25;";
+     typeCheck(input);
+     }
+	 
+	 @Test
+     public void test211() throws Exception {
+	     //thrown.expect(SemanticException.class);
+	     String input = "prog image [10,11] abcd <- @1234+234;";
+             
+	     typeCheck(input);
+     }
+	 @Test
+     public void test31() throws Exception {
+         //thrown.expect(SemanticException.class);
+	     thrown.expect(SemanticException.class);
+	     String input = "prog boolean i =  8 ;";
+	     typeCheck(input);
+     }
+	 
+	 @Test
+     public void test41() throws Exception {
+         //thrown.expect(SemanticException.class);
+         thrown.expect(SemanticException.class);
+         String input = "prog boolean i =  true ;\n "
+                 + "image img ; "
+                 + "image img;";
+         typeCheck(input);
+     }
+	 
+	 @Test
+     public void test51() throws Exception {
+         String input = "prog boolean i =  false ; ";
+         typeCheck(input);
+     }
+	 
+	 
+     @Test
+     public void testDec21() throws Exception {
+     String input = "prog int k = 2;";
+     typeCheck(input);
+     }
+     @Test
+     public void testUndec23() throws Exception {
+     String input = "prog int k=k+1;";
+     thrown.expect(SemanticException.class);
+     typeCheck(input);
+     }
+     @Test
+     public void testUndec() throws Exception {
+     String input = "prog k = 42;";
+     thrown.expect(SemanticException.class);
+     typeCheck(input);
+     }
+     
+    
 
+    
+     /**
+      * This program does not declare k. The TypeCheckVisitor should
+      * throw a SemanticException in a fully implemented assignment.
+      * @throws Exception
+      */
+     
+     
 
 }
