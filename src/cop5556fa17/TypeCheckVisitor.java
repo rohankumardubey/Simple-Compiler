@@ -104,7 +104,7 @@ public class TypeCheckVisitor implements ASTVisitor {
                 expression_Binary.vtype = Type.BOOLEAN;
                 break;
                 
-            case OP_GE :
+            case OP_GE:
             case OP_GT:
             case OP_LT:
             case OP_LE:
@@ -437,6 +437,10 @@ public class TypeCheckVisitor implements ASTVisitor {
 		// TODO Auto-generated method stub
 	    Type sourceType = (Type)statement_In.source.visit(this, null);
 		if(!s.iscontains(statement_In.name)){
+		    throw  new SemanticException(
+                    statement_In.firstToken,"Symantic exeption at "
+                            + statement_In.firstToken.toString());   
+		    
 		    }
 		Declaration d = s.getfromSymboltable(statement_In.name);
 	    statement_In.setDec(d);
@@ -463,7 +467,7 @@ public class TypeCheckVisitor implements ASTVisitor {
                 statement_Assign.firstToken,"Symantic exeption at "+ 
                         statement_Assign.firstToken.toString());
 	    }
-	    statement_Assign.setCartesian(statement_Assign.lhs.isCartesian);
+	    statement_Assign.setCartesian(statement_Assign.lhs.isCartesian());
 	    return statement_Assign.vtype;
 	}
 
