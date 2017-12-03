@@ -444,15 +444,15 @@ public class TypeCheckVisitor implements ASTVisitor {
 		    }
 		Declaration d = s.getfromSymboltable(statement_In.name);
 	    statement_In.setDec(d);
-		if( d != null && d.vtype == sourceType){
-		    
-		}
-		else{
-		    throw  new SemanticException(
-                    statement_In.firstToken,"Symantic exeption at "
-                            + statement_In.firstToken.toString());   
-		    
-		}
+//		if( d != null && d.vtype == sourceType){
+//		    
+//		}
+//		else{
+//		    throw  new SemanticException(
+//                    statement_In.firstToken,"Symantic exeption at "
+//                            + statement_In.firstToken.toString());   
+//		    
+		//}
 		return statement_In.vtype;
 	}
 
