@@ -452,7 +452,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 //                    statement_In.firstToken,"Symantic exeption at "
 //                            + statement_In.firstToken.toString());   
 //		    
-		//}
+//		}
 		return statement_In.vtype;
 	}
 
@@ -462,10 +462,13 @@ public class TypeCheckVisitor implements ASTVisitor {
 		// TODO Auto-generated method stub
 	    Type lhsType = (Type)statement_Assign.lhs.visit(this, null);
 	    Type expType = (Type)statement_Assign.e.visit(this, null);
-	    if (lhsType!=expType ) {
-	        throw  new SemanticException(
-                statement_Assign.firstToken,"Symantic exeption at "+ 
-                        statement_Assign.firstToken.toString());
+	    if ( lhsType!=expType  ) {
+	        if(lhsType == Type.IMAGE && expType == Type.INTEGER){}
+	        else{
+	            throw  new SemanticException(
+	                    statement_Assign.firstToken,"Symantic exeption at "+ 
+	                            statement_Assign.firstToken.toString());
+	        }
 	    }
 	    statement_Assign.setCartesian(statement_Assign.lhs.isCartesian());
 	    return statement_Assign.vtype;

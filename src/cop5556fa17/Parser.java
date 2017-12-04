@@ -240,7 +240,7 @@ public class Parser {
         Expression e0 = new Expression_PredefinedName(ft, ft.kind);
         match(COMMA);
         Token e = t;
-        match(KW_A);
+        match(KW_a);
         Expression e1 = new Expression_PredefinedName(e, e.kind);
         return new Index(ft, e0, e1);
     }
