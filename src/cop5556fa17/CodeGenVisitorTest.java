@@ -186,6 +186,30 @@ public class CodeGenVisitorTest implements ImageResources{
 	}
 	
 	@Test
+    /**
+     * Creates a default-sized green image.
+     * @throws Exception
+     */
+    public void imagetemp() throws Exception{
+        devel = false;
+        grade = true;
+        String prog = "imagetemp";
+        String input = prog
+                + " image g;"
+                + "g[[x,y]] = 0;"
+               
+                ;
+        byte[] bytecode = genCode(input);       
+        String[] commandLineArgs = {}; 
+        runCode(prog, bytecode, commandLineArgs);       
+        BufferedImage imageRef = ImageSupport.makeConstantImage(0x000000, 256, 256);
+        //BufferedImage image = RuntimeLog.globalImageLog.get(0);
+        //ImageSupport.compareImages(imageRef, image);
+        keepFrame();
+    }
+	
+	
+	@Test
 	/** This is the same test case as before, but the assert statement has been updated to reflect the new instructions
 	 * for where to put log statements in assignment 6.
 	 * 
@@ -260,17 +284,17 @@ public class CodeGenVisitorTest implements ImageResources{
 	public void image1() throws Exception{
 		String prog = "image1";
 		String input = prog 
-				+ "\nimage g <- @0;";
-			//	+ "g <- \"dxdzcx\";\n";
-//				+ "g -> SCREEN;\n"
-//				;
+				+ "\nimage g <- @0;"
+				+ "g <- \"/home/kps/Desktop/camera.png\";\n"
+				+ "g -> SCREEN;\n"
+				;
 		byte[] bytecode = genCode(input);		
 		String[] commandLineArgs = {imageFile1}; 
 		runCode(prog, bytecode, commandLineArgs);	
-	//	BufferedImage refImage0 = ImageSupport.readFromFile(imageFile1);
-		//BufferedImage loggedImage0 = RuntimeLog.globalImageLog.get(0);
-	//	assertTrue(ImageSupport.compareImages(refImage0, loggedImage0 ));
-	//	keepFrame();	
+		BufferedImage refImage0 = ImageSupport.readFromFile(imageFile1);
+	    BufferedImage loggedImage0 = RuntimeLog.globalImageLog.get(0);
+		assertTrue(ImageSupport.compareImages(refImage0, loggedImage0 ));
+		keepFrame();	
 	}
 	
 
@@ -285,9 +309,9 @@ public class CodeGenVisitorTest implements ImageResources{
 		grade = true;
 		String prog = "image2";
 		String input = prog 
-				+ "\nimage g; \n"
-				+ "g <- @ 0;\n";
-				//+ "g -> SCREEN;\n"
+				+ "\nimage[128,128] g; \n"
+				+ "g <- @ 0;\n"
+				+ "g -> SCREEN;\n"
 				;
 		byte[] bytecode = genCode(input);		
 		String[] commandLineArgs = {imageFile1}; 
@@ -372,7 +396,7 @@ public class CodeGenVisitorTest implements ImageResources{
 		runCode(prog, bytecode, commandLineArgs);		
 	
 		BufferedImage loggedImage0 = RuntimeLog.globalImageLog.get(0);
-		BufferedImage loggedImage1 = RuntimeLog.globalImageLog.get(1);
+	    BufferedImage loggedImage1 = RuntimeLog.globalImageLog.get(1);
 		assertTrue(ImageSupport.compareImages(loggedImage0,loggedImage1));	
 		
 		keepFrame();
@@ -423,5 +447,68 @@ public void checkConstants() throws Exception{
 	runCode(prog, bytecode, commandLineArgs);	
 	System.out.println("Z=" + 0xFFFFFF);
 	assertEquals(Z + ";256;256;", RuntimeLog.getGlobalString());
+}
+@Test
+public void canvas1() throws Exception{
+    devel = false;
+    grade = true;
+    String prog = "image5";
+    String input = prog 
+               + "\nimage[1024,1024] g;" 
+               +"\n\nimage[1024,1024] h;" 
+               +" \ng <- @ 0;"
+               +"\ng -> SCREEN;"
+               +"\nh[[x,y]] = ! g[x,y];"
+               +"h -> SCREEN; \n"
+               ;
+    
+    byte[] bytecode = genCode(input);   
+    //String imageURL = "\"https://westernalaskalcc.org/SiteAssets/SitePages/Western%20Alaska%20LCC/360px-Caught_some_crabs.jpg\"";
+    String[] commandLineArgs = {imageFile1}; 
+    runCode(prog, bytecode, commandLineArgs);   
+    
+    BufferedImage loggedImage0 = RuntimeLog.globalImageLog.get(0);
+    BufferedImage loggedImage1 = RuntimeLog.globalImageLog.get(1);
+    BufferedImage test = ImageSupport.makeImage(1024, 1024);
+    
+    
+    for(int y = 0; y < 1024; y++) {
+        for (int x = 0; x < 1024; x++) {
+            //int pixelRef = RuntimeFunctions.cart_y(RuntimeFunctions.polar_r(x, y), RuntimeFunctions.polar_a(x, y)); 
+            ImageSupport.setPixel(ImageSupport.getPixel(loggedImage0, x,y)^Integer.MAX_VALUE,test,x,y);
+            int pixel1 = ImageSupport.getPixel(test, x, y);
+            int pixel2 = ImageSupport.getPixel(loggedImage1, x,y);
+            assertEquals(pixel1, pixel2);
+        }
+    }
+    //assertTrue(ImageSupport.compareImages(loggedImage0,loggedImage1));    
+    keepFrame();
+    //keepFrame();
+    
+}
+@Test
+public void image5T() throws Exception{
+    devel = false;
+    grade = true;
+    String prog = "image5";
+    String input = prog
+            + "\nimage[1024,1024] g; \nimage[1024,1024] h; \n"
+            + "g <- @ 0;\ng -> SCREEN;\n"
+            + "h[[x,y]] = !g[x,y];"
+            + "h -> SCREEN; \n"
+            ;
+    byte[] bytecode = genCode(input);       
+    String[] commandLineArgs = {imageFile1}; 
+    runCode(prog, bytecode, commandLineArgs);       
+    BufferedImage origImage = RuntimeLog.globalImageLog.get(0);
+    BufferedImage loggedImage = RuntimeLog.globalImageLog.get(1);
+    for(int y = 0; y < 1024; y++) {
+        for (int x = 0; x < 1024; x++) {
+            int pixelRef = ImageSupport.getPixel(origImage, x, y)^Integer.MAX_VALUE; 
+            int pixel = ImageSupport.getPixel(loggedImage, x,y);
+            assertEquals(pixelRef, pixel);
+        }
+    }
+    keepFrame();
 }
 }
