@@ -276,7 +276,7 @@ public class CodeGenVisitor implements ASTVisitor, Opcodes {
 		        mv.visitInsn(IXOR);
 		    }
 		    else {
-		        Integer i = new Integer(0x7fffffff);
+		        Integer i = new Integer(0x0fffffff);
 		        mv.visitLdcInsn(i);
 		        mv.visitInsn(IXOR);
 		    }
@@ -296,10 +296,11 @@ public class CodeGenVisitor implements ASTVisitor, Opcodes {
 		// TODO HW6
 		index.e0.visit(this, null);
 		index.e1.visit(this, null);
-		if(!index.isCartesian()){
+		if(index.isCartesian()){}
+		else {
 		    mv.visitInsn(DUP2);
 		    mv.visitMethodInsn(INVOKESTATIC, RuntimeFunctions.className, "cart_x", RuntimeFunctions.cart_xSig, false);
-		    mv.visitInsn(DUP2_X2);
+		    mv.visitInsn(DUP_X2);
 		    mv.visitInsn(POP);
 		    mv.visitMethodInsn(INVOKESTATIC, RuntimeFunctions.className, "cart_y", RuntimeFunctions.cart_ySig, false);
 		    
@@ -507,21 +508,25 @@ public class CodeGenVisitor implements ASTVisitor, Opcodes {
 	    if(statement_Out.getDec().vtype == Type.INTEGER) type = "I";
 	    else if(statement_Out.getDec().vtype == Type.BOOLEAN) type = "Z";
 	    else if(statement_Out.getDec().vtype == Type.IMAGE) type = ImageSupport.ImageDesc;
+	    if(statement_Out.getDec().vtype != Type.IMAGE )
 	    mv.visitFieldInsn(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
 	    mv.visitFieldInsn(GETSTATIC, className, statement_Out.name, type);
 	    CodeGenUtils.genLogTOS(GRADE, mv, statement_Out.getDec().vtype);
 	    if(statement_Out.getDec().vtype == Type.IMAGE) statement_Out.sink.visit(this, arg);
 	    else if (statement_Out.getDec().vtype == Type.INTEGER) {
             //statement_Out.sink.visit(this, arg);
-            mv.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(I)V", false);
+	        
+	        mv.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(I)V", false);
         }
         
         else if (statement_Out.getDec().vtype == Type.BOOLEAN) {
             mv.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Z)V", false);         
         }
-        
-        
         return null;
+	    
+	   
+        
+       
 	}
 
 	/**
@@ -625,8 +630,7 @@ public class CodeGenVisitor implements ASTVisitor, Opcodes {
 		//TODO HW6
 	    
 	    mv.visitFieldInsn(GETSTATIC, className, sink_Ident.name, ImageSupport.StringDesc);
-		//BufferedImage image = null;		
-		//mv.visitFieldInsn(GETSTATIC, className, sink_Ident.name, "I");	
+		
 		mv.visitMethodInsn(INVOKESTATIC, ImageSupport.className, "write", ImageSupport.writeSig,false);
 		
 		return null;
@@ -666,6 +670,12 @@ public class CodeGenVisitor implements ASTVisitor, Opcodes {
             
         }
         else if(statement_Assign.lhs.vtype == Type.IMAGE){
+            Label OloopS = new Label();
+            Label OloopE = new Label();
+            Label IloopS = new Label();
+            Label IloopE = new Label();
+            
+            
             mv.visitFieldInsn(GETSTATIC, className, statement_Assign.lhs.name, ImageSupport.ImageDesc);
             mv.visitInsn(DUP);
             mv.visitMethodInsn(INVOKESTATIC, ImageSupport.className,
@@ -680,101 +690,49 @@ public class CodeGenVisitor implements ASTVisitor, Opcodes {
             mv.visitMethodInsn(INVOKESTATIC, RuntimeFunctions.className, "polar_r", 
                     RuntimeFunctions.polar_rSig, false);
             mv.visitFieldInsn(PUTSTATIC, className, "R", "I");           
-            
-            
             mv.visitInsn(ICONST_0);
             mv.visitFieldInsn(GETSTATIC, className, "Y", "I");
             mv.visitMethodInsn(INVOKESTATIC, RuntimeFunctions.className, "polar_a", 
                     RuntimeFunctions.polar_aSig, false);
             mv.visitFieldInsn(PUTSTATIC, className, "A", "I");
             
+            mv.visitInsn(ICONST_0);
+            mv.visitFieldInsn(PUTSTATIC, className, "x", "I");         
+            mv.visitLabel(OloopS);            
+            mv.visitFieldInsn(GETSTATIC, className, "x", "I");            
+            mv.visitFieldInsn(GETSTATIC, className, "X", "I");          
+            mv.visitJumpInsn(IF_ICMPGE, OloopE);   
             
             mv.visitInsn(ICONST_0);
-            mv.visitFieldInsn(PUTSTATIC, className, "x", "I");
-            
-            
-            Label Xstart = new Label();
-            Label Xend = new Label();
-            
-            Label Ystart = new Label();
-            Label Yend = new Label();
-            
-            mv.visitLabel(Xstart);
-            
+            mv.visitFieldInsn(PUTSTATIC, className, "y", "I");           
+            mv.visitLabel(IloopS);           
+            mv.visitFieldInsn(GETSTATIC, className, "y", "I");            
+            mv.visitFieldInsn(GETSTATIC, className, "Y", "I");            
+            mv.visitJumpInsn(IF_ICMPGE, IloopE);
             mv.visitFieldInsn(GETSTATIC, className, "x", "I");
-            
-            mv.visitFieldInsn(GETSTATIC, className, "X", "I");
-            
-            
-            mv.visitJumpInsn(IF_ICMPGE, Xend);
-            
-            
-            mv.visitInsn(ICONST_0);
-            mv.visitFieldInsn(PUTSTATIC, className, "y", "I");
-            
-            
-            mv.visitLabel(Ystart);
-            
-            
-            mv.visitFieldInsn(GETSTATIC, className, "y", "I");
-            
-            mv.visitFieldInsn(GETSTATIC, className, "Y", "I");
-            
-            
-            
-            mv.visitJumpInsn(IF_ICMPGE, Yend);
-            
-            
-            mv.visitFieldInsn(GETSTATIC, className, "x", "I");
-            
-            mv.visitFieldInsn(GETSTATIC, className, "y", "I");
-            
-            mv.visitInsn(DUP2);
-            
+            mv.visitFieldInsn(GETSTATIC, className, "y", "I");            
+            mv.visitInsn(DUP2);            
             mv.visitMethodInsn(INVOKESTATIC, RuntimeFunctions.className, "polar_r", 
                     RuntimeFunctions.polar_rSig, false);
-            mv.visitFieldInsn(PUTSTATIC, className, "r", "I");
-            
-            
+            mv.visitFieldInsn(PUTSTATIC, className, "r", "I");            
             mv.visitMethodInsn(INVOKESTATIC, RuntimeFunctions.className, "polar_a", 
                     RuntimeFunctions.polar_aSig, false);
             mv.visitFieldInsn(PUTSTATIC, className, "a", "I");
-            
-            
-            
-            statement_Assign.e.visit(this, arg);
-            
-            
+            statement_Assign.e.visit(this, arg);           
             statement_Assign.lhs.visit(this, arg);
-            
-            
             
             mv.visitInsn(ICONST_1);
             mv.visitFieldInsn(GETSTATIC, className, "y", "I");
             mv.visitInsn(IADD);
             mv.visitFieldInsn(PUTSTATIC, className, "y", "I");
-            
-            
-            mv.visitJumpInsn(GOTO, Ystart);
-            
-            
-            mv.visitLabel(Yend);
-            
-            
+            mv.visitJumpInsn(GOTO, IloopS);
+            mv.visitLabel(IloopE);           
             mv.visitInsn(ICONST_1);
             mv.visitFieldInsn(GETSTATIC, className, "x", "I");
             mv.visitInsn(IADD);
-            mv.visitFieldInsn(PUTSTATIC, className, "x", "I");
-            
-            
-            mv.visitJumpInsn(GOTO, Xstart);
-            
-            
-            mv.visitLabel(Xend);
-            
-            
-            
-            
+            mv.visitFieldInsn(PUTSTATIC, className, "x", "I");            
+            mv.visitJumpInsn(GOTO, OloopS);           
+            mv.visitLabel(OloopE);
         }
         
         return null;

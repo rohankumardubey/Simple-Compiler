@@ -306,8 +306,9 @@ public class TypeCheckVisitor implements ASTVisitor {
 			throws Exception {
 		// TODO Auto-generated method stub
 	    source_CommandLineParam.paramNum.visit(this, null);
-		source_CommandLineParam.vtype = source_CommandLineParam.paramNum.vtype;
-		if(source_CommandLineParam.vtype == Type.INTEGER){
+	    
+		source_CommandLineParam.vtype = null;
+		if(source_CommandLineParam.paramNum.vtype == Type.INTEGER){
 		    
 		}
 		else {
@@ -355,7 +356,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 	    Type sourceType = (Type) declaration_SourceSink.source.visit(this, null);
 	    declaration_SourceSink.vtype = TypeUtils.getType(declaration_SourceSink.firstToken);
         s.insert(declaration_SourceSink.name, declaration_SourceSink);
-        if(sourceType == declaration_SourceSink.vtype ){}
+        if(sourceType == declaration_SourceSink.vtype || sourceType == null ){}
         else {
             throw  new SemanticException(declaration_SourceSink.firstToken, 
                     "Symantic exeption at "+ declaration_SourceSink.firstToken.toString());
