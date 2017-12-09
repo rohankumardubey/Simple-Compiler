@@ -18,7 +18,7 @@ import cop5556fa17.AST.Program;
 public class CodeGenVisitorTest implements ImageResources{
 	
 	static boolean doPrint = true;
-	static boolean doCreateFile = true;
+	static boolean doCreateFile = false;
 
 	static void show(Object s) {
 		if (doPrint) {
@@ -183,7 +183,37 @@ public class CodeGenVisitorTest implements ImageResources{
 		ImageSupport.compareImages(imageRef, image);
 		keepFrame();
 	}
-
+	@Test
+	public void imagePreDef() throws Exception{
+	    //args: <imageURL>\nimage g; \ng[[r,a]] = cart_x[r,a]; \ng -> SCREEN;\n"
+	    String prog = "imagePreDef";
+	    String input = prog + " \n"
+	            +"image g;"
+	            +"\ng[[r,a]] = cart_x[r,a];"
+	            +"\ng -> SCREEN;\n"
+	            ;
+	    byte[] bytecode = genCode(input);       
+	    String[] commandLineArgs = {}; 
+	    runCode(prog, bytecode, commandLineArgs);   
+	    BufferedImage refImage0 = ImageSupport.readFromFile(imageFile1);
+	    BufferedImage loggedImage0 = RuntimeLog.globalImageLog.get(0);
+	    for(int y = 0; y < 256; y++) {
+	        for (int x = 0; x < 256; x++) {
+	            int r = RuntimeFunctions.polar_r(x, y);
+	            int a = RuntimeFunctions.polar_a(x, y);
+	            int cartx = RuntimeFunctions.cart_x(r, a);
+	            int pixelRef = cartx; 
+	            //System.out.println(cartx);
+	        //  System.out.println("****");
+	            int pixel = ImageSupport.getPixel(loggedImage0, x,y);
+	            //System.out.println(pixel);
+	            assertEquals(pixelRef, pixel);
+	        }
+	        
+	    }
+	    //assertTrue(ImageSupport.compareImages(refImage0, loggedImage0 ));
+	    keepFrame();    
+	}
 	
 	
 	@Test
@@ -340,31 +370,7 @@ public class CodeGenVisitorTest implements ImageResources{
 		keepFrame();
 	}
 	
-	@Test
-    public void image_whatsapp() throws Exception {
-        devel = false;
-        grade = true;
-        String prog = "image5";
-        String input = prog + "\nimage[1024,1024] g;" + "\nimage[1024,1024] h;" + "\ng <- @ 0;" + "\ng -> SCREEN;"
-                + "\nh[[x,y]] = ! g[x,y];" + "\nh -> SCREEN;";
-        byte[] bytecode = genCode(input);
-        String[] commandLineArgs = { imageFile1, imageFile2 };
-        runCode(prog, bytecode, commandLineArgs);
 
-        BufferedImage loggedImage0 = RuntimeLog.globalImageLog.get(0);
-        BufferedImage loggedImage1 = RuntimeLog.globalImageLog.get(1);
-        for (int y = 0; y < 1024; y++) {
-            for (int x = 0; x < 1024; x++) {
-                int pixel0 = 0x00FFFFFF ^ ImageSupport.getPixel(loggedImage0, x, y);
-                int pixel1 = ImageSupport.getPixel(loggedImage1, x, y);
-                assertEquals(pixel0, pixel1);
-            }
-        }
-
-        keepFrame();
-    }
-	
-	
 	@Test
 	
 	public void image5() throws Exception{
@@ -391,15 +397,16 @@ public class CodeGenVisitorTest implements ImageResources{
 	public void image6() throws Exception{
 		String prog = "image6";
 		String input = prog
-                +"\nimage[1024,1024] g;"
-                +"\n\nimage[1024,1024] h;"
-                +"\ng <- @ 0;"
-                +"\n file f = @ 1;"
-                +"\ng -> SCREEN;"
-                +"\nh[[x,y]] =  g[r,a];"
-                +"h -> SCREEN;"
-                +"\nh -> f;"
-                ;
+				+"\nimage[1024,1024] g; "
+				+ "\n\nimage[1024,1024] h;"
+				+ "\ng <- @ 0;"
+				+ "\ng -> SCREEN;"
+				+ "\nh[[x,y]] = ! g[x,y];"
+				+ "\nh -> SCREEN; "
+				+ "\nimage[1024,1024] average; "
+				+ "\naverage[[x,y]] = h[x,y]*3;"
+				+ "\naverage -> SCREEN;"
+				;
 		byte[] bytecode = genCode(input);		
 		String[] commandLineArgs = {imageFile1}; 
 		runCode(prog, bytecode, commandLineArgs);	
@@ -419,7 +426,7 @@ public class CodeGenVisitorTest implements ImageResources{
 				+ "\ng <- @ 0;"
 				+ "\n file f = @ 1; "
 				+ "\ng -> SCREEN;"
-				+ "\nh[[x,y]] =  g[r,a];"
+				+ "\nh[[r,a]] =  g[r,a];"
 				+ "h -> SCREEN; "
 				+ "\nh -> f;"
 				;
@@ -428,12 +435,55 @@ public class CodeGenVisitorTest implements ImageResources{
 		runCode(prog, bytecode, commandLineArgs);	
 	
 
-//		BufferedImage loggedImage0 = RuntimeLog.globalImageLog.get(0);
-//		BufferedImage loggedImage1 = RuntimeLog.globalImageLog.get(1);
+		BufferedImage loggedImage0 = RuntimeLog.globalImageLog.get(0);
+		BufferedImage loggedImage1 = RuntimeLog.globalImageLog.get(1);
 
-//		assertTrue(ImageSupport.compareImages(loggedImage1, loggedImage0 ));
+		assertTrue(ImageSupport.compareImages(loggedImage1, loggedImage0 ));
 		keepFrame();	
 	}
+	
+	@Test
+    public void canvas1() throws Exception{
+        devel = false;
+        grade = true;
+        String prog = "image5";
+    
+        String input = prog
+                +"\nimage[1024,1024] g;"
+                +"\n\nimage[1024,1024] h;"
+                +"\ng <- @ 0;"
+                +"\n file f = @ 1;"
+                +"\ng -> SCREEN;"
+                +"\nh =  g[r,a];"
+                +"h -> SCREEN;"
+                +"\nh -> f;"
+                ;
+
+        byte[] bytecode = genCode(input);   
+        //String imageURL = "\"https://westernalaskalcc.org/SiteAssets/SitePages/Western%20Alaska%20LCC/360px-Caught_some_crabs.jpg\"";
+        String[] commandLineArgs = { imageFile1, imageFile2 };
+        runCode(prog, bytecode, commandLineArgs);   
+        
+        BufferedImage loggedImage0 = RuntimeLog.globalImageLog.get(0);
+        BufferedImage loggedImage1 = RuntimeLog.globalImageLog.get(1);
+    //  BufferedImage test = ImageSupport.makeImage(1024, 1024);
+        
+        
+        for(int y = 0; y < 1024; y++) {
+            for (int x = 0; x < 1024; x++) {
+                int r =RuntimeFunctions.polar_r(x, y);
+                int a =RuntimeFunctions.polar_a(x, y);
+                int pixelRef = ImageSupport.getPixel(loggedImage0, x, y);
+                int pixel = ImageSupport.getPixel(loggedImage1, r,a);
+                System.out.println(pixelRef+" "+pixel);
+                assertEquals(pixelRef, pixel);
+            }
+        }
+        //assertTrue(ImageSupport.compareImages(loggedImage0,loggedImage1));    
+        keepFrame();
+        //keepFrame();
+        
+    }
 	
 	
 	@Test
